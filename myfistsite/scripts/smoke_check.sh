@@ -5,12 +5,12 @@ python manage.py check
 python manage.py shell -c "
 from django.test import Client
 client = Client()
-paths = ['/', '/en/', '/en/blog/', '/en/catalog/', '/api/schema/']
+paths = ['/', '/catalog/', '/cart/', '/sign-in/', '/admin/']
 codes = {path: client.get(path).status_code for path in paths}
 print(codes)
-assert codes['/'] in (200, 302)
-assert codes['/en/'] == 200
-assert codes['/en/blog/'] == 200
-assert codes['/en/catalog/'] == 200
-assert codes['/api/schema/'] in (200, 302, 403)
+assert codes['/'] == 200
+assert codes['/catalog/'] == 200
+assert codes['/cart/'] == 200
+assert codes['/sign-in/'] == 200
+assert codes['/admin/'] in (200, 302)
 "

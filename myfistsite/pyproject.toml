@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "myfistsite"
 version = "0.1.0"
-description = "Учебный Django-проект: магазин + аккаунты + блог + API docs + monitoring"
+description = "Django shop project with single storefront frontend and Docker deployment"
 authors = ["OpenAI <noreply@example.com>"]
 
 [tool.poetry.dependencies]

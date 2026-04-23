@@ -4,6 +4,7 @@ import random
 from decimal import Decimal
 from typing import Any
 
+from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.password_validation import validate_password
 from django.core.paginator import Paginator
@@ -470,6 +471,8 @@ class OrderApiView(View):
         if request.user.is_authenticated:
             order.user = request.user
             profile, _ = Profile.objects.get_or_create(user=request.user)
+            if phone and Profile.objects.exclude(pk=profile.pk).filter(phone=phone).exists():
+                return JsonResponse({"error": "Phone already exists."}, status=400)
             profile.full_name = full_name
             profile.phone = phone
             profile.save(update_fields=["full_name", "phone", "updated_at"])
@@ -575,6 +578,8 @@ class ProfileApiView(View):
             return JsonResponse({"error": "Full name and email are required."}, status=400)
         if get_user_model().objects.exclude(pk=request.user.pk).filter(email__iexact=email).exists():
             return JsonResponse({"error": "Email already exists."}, status=400)
+        if phone and Profile.objects.exclude(pk=profile.pk).filter(phone=phone).exists():
+            return JsonResponse({"error": "Phone already exists."}, status=400)
         request.user.email = email
         request.user.save(update_fields=["email"])
         profile.full_name = full_name
@@ -613,7 +618,7 @@ class ProfileAvatarApiView(View):
         avatar = request.FILES.get("avatar")
         if not avatar:
             return JsonResponse({"error": "Avatar file is required."}, status=400)
-        if avatar.size > 2 * 1024 * 1024:
+        if avatar.size > settings.MAX_UPLOAD_SIZE:
             return JsonResponse({"error": "Avatar must be 2 MB or smaller."}, status=400)
         profile, _ = Profile.objects.get_or_create(user=request.user)
         profile.avatar = avatar
