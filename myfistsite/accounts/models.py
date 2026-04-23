@@ -2,6 +2,7 @@ from pathlib import Path
 
 from django.conf import settings
 from django.db import models
+from django.db.models import Q
 
 
 def profile_avatar_upload_to(instance, filename: str) -> str:
@@ -34,6 +35,13 @@ class Profile(models.Model):
         permissions = (
             ("view_api_docs", "Может просматривать API-документацию"),
         )
+        constraints = [
+            models.UniqueConstraint(
+                fields=["phone"],
+                condition=~Q(phone=""),
+                name="accounts_profile_unique_non_empty_phone",
+            ),
+        ]
 
     def __str__(self) -> str:
         return f"Профиль {self.user.username}"

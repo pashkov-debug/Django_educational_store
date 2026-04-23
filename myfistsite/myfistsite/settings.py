@@ -30,6 +30,8 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-change-me")
 DEBUG = env_bool("DJANGO_DEBUG", True)
 ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", ["127.0.0.1", "localhost", "testserver"])
 
+CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS", [])
+
 
 def build_internal_ips() -> list[str]:
     internal_ips = ["127.0.0.1"]
@@ -62,7 +64,6 @@ INSTALLED_APPS = [
     "django_filters",
     "shopapp",
     "accounts.apps.AccountsConfig",
-    "blogapp.apps.BlogappConfig",
 ]
 
 MIDDLEWARE = [
@@ -177,7 +178,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-MAX_UPLOAD_SIZE = 1024 * 1024
+MAX_UPLOAD_SIZE = 2 * 1024 * 1024
 
 CACHES = {
     "default": {

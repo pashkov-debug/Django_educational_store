@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
@@ -92,6 +93,12 @@ class AvatarUpdateForm(forms.Form):
         if user is not None and getattr(user, "is_authenticated", False):
             self.profile, _ = Profile.objects.get_or_create(user=user)
 
+    def clean_avatar(self):
+        avatar = self.cleaned_data.get("avatar")
+        if avatar and avatar.size > settings.MAX_UPLOAD_SIZE:
+            raise forms.ValidationError("Размер аватарки должен быть не больше 2 МБ.")
+        return avatar
+
     def save(self):
         if not self.profile:
             raise ValueError("Нельзя сохранить аватар для неавторизованного пользователя.")
@@ -161,7 +168,10 @@ class ProfileUpdateForm(forms.Form):
         return value
 
     def clean_phone(self):
-        return self.cleaned_data["phone"].strip()
+        phone = self.cleaned_data["phone"].strip()
+        if phone and Profile.objects.exclude(pk=self.profile.pk).filter(phone=phone).exists():
+            raise forms.ValidationError("Пользователь с таким телефоном уже существует.")
+        return phone
 
     def save(self):
         self.user.email = self.cleaned_data["email"]
