@@ -1,0 +1,57 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+<div id="site-name">
+    <a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a>
+</div>
+{% if user.is_anonymous %}
+    {% include "admin/color_theme_toggle.html" %}
+{% endif %}
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block userlinks %}
+    {{ block.super }}
+
+    {% if user.is_authenticated and user.is_active %}
+        {% if user.is_staff or perms.accounts.view_api_docs %}
+            <span style="margin-left: 12px;">
+                <a href="/api/docs/" target="_blank" rel="noopener noreferrer">API Docs</a>
+            </span>
+        {% endif %}
+    {% endif %}
+
+    {% get_current_language as CURRENT_LANGUAGE %}
+
+    <span style="margin-left: 12px;">
+        <a id="admin-lang-en"
+           href="#"
+           {% if CURRENT_LANGUAGE == "en" %}style="font-weight:700; text-decoration:underline;"{% endif %}>EN</a>
+        <span style="opacity:.6; margin: 0 4px;">|</span>
+        <a id="admin-lang-ru"
+           href="#"
+           {% if CURRENT_LANGUAGE == "ru" %}style="font-weight:700; text-decoration:underline;"{% endif %}>RU</a>
+    </span>
+
+    <script>
+    (function () {
+        function buildLangUrl(lang) {
+            const path = window.location.pathname;
+            const search = window.location.search || "";
+            const hash = window.location.hash || "";
+            const stripped = path.replace(/^\/(en|ru)(?=\/|$)/, "") || "/";
+            return "/" + lang + stripped + search + hash;
+        }
+
+        const enLink = document.getElementById("admin-lang-en");
+        const ruLink = document.getElementById("admin-lang-ru");
+
+        if (enLink) enLink.href = buildLangUrl("en");
+        if (ruLink) ruLink.href = buildLangUrl("ru");
+    })();
+    </script>
+{% endblock %}

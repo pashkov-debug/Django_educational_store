@@ -1,0 +1,57 @@
+{% extends "frontend/base.html" %}
+{% load i18n %}
+
+{% block title %}Блог{% endblock %}
+
+{% block content %}
+<div class="Middle">
+    <div class="Section">
+        <div class="wrap">
+            <div class="Section-header">
+                <h1 class="Section-title">Блог</h1>
+                <div class="Section-description">
+                    Статьи с оптимизированной загрузкой связанных сущностей.
+                </div>
+            </div>
+
+            {% for article in articles %}
+                <div class="Card">
+                    <div class="Card-content">
+                        <div>
+                            <strong>Дата публикации:</strong>
+                            {{ article.pub_date|date:"d.m.Y H:i" }}
+                        </div>
+                        <div>
+                            <strong>Автор:</strong>
+                            {{ article.author.name }}
+                        </div>
+                        <div>
+                            <strong>Категория:</strong>
+                            {{ article.category.name }}
+                        </div>
+
+                        <h2>{{ article.title }}</h2>
+
+                        <div>
+                            <strong>Теги:</strong>
+                            {% for tag in article.tags.all %}
+                                {{ tag.name }}{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                                Нет тегов
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <br>
+            {% empty %}
+                <div class="Card">
+                    <div class="Card-content">
+                        <h2>Статей пока нет</h2>
+                        <p>Примени seed-миграцию, чтобы наполнить страницу демо-данными.</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

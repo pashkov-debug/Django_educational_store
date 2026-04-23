@@ -1,0 +1,25 @@
+{
+  "replace_existing_files": [
+    "Dockerfile",
+    "README_dev_command.md",
+    "docker-compose.yml",
+    "myfistsite/settings.py",
+    "myfistsite/urls.py"
+  ],
+  "add_new_files": [
+    ".dockerignore",
+    ".env.example",
+    ".gitignore",
+    "README.md",
+    "entrypoint.sh",
+    "infra/grafana/provisioning/datasources/datasource.yml",
+    "infra/promtail/promtail-config.yml",
+    "poetry.toml",
+    "pyproject.toml",
+    "scripts/smoke_check.sh"
+  ],
+  "notes": [
+    "Удаления не обязательны: в исходном проекте отличались только __pycache__/*.pyc.",
+    "Если хотите полностью очистить проект, можно удалить все __pycache__ каталоги."
+  ]
+}

@@ -1,0 +1,47 @@
+{% extends "frontend/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="Middle Middle_top">
+  <div class="Middle-top">
+    <div class="wrap">
+      <div class="Middle-header">
+        <h1 class="Middle-title">Payment</h1>
+        <ul class="breadcrumbs Middle-breadcrumbs">
+          <li class="breadcrumbs-item"><a href="/">Home</a></li>
+          <li class="breadcrumbs-item breadcrumbs-item_current"><span>Payment</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="Section">
+    <div class="wrap">
+      <form class="form Payment" @submit.prevent="submitPayment">
+        <div class="Payment-card">
+          <div class="form-group">
+            <label for="number" class="form-label">Payment number
+              <input class="form-input Payment-bill"
+                     id="number"
+                     name="number"
+                     type="text"
+                     placeholder="Even number, max 8 digits"
+                     maxlength="8"
+                     v-model="number"/>
+            </label>
+          </div>
+          <div class="form-group">
+            <button class="btn btn_muted" type="button" @click="generateRandomNumber">Generate random account</button>
+          </div>
+        </div>
+        <div class="Payment-pay">
+          <button class="btn btn_primary" type="submit">Pay</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block mixins %}
+<script src="{% static 'frontend/assets/js/payment.js' %}"></script>
+{% endblock %}

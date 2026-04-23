@@ -1,0 +1,297 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: myfistsite 1.0\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Русский"
+msgstr "Russian"
+
+msgid "English"
+msgstr "English"
+
+msgid "Russian"
+msgstr "Russian"
+
+msgid "Админка"
+msgstr "Admin"
+
+msgid "Admin"
+msgstr "Admin"
+
+msgid "Выйти"
+msgstr "Log out"
+
+msgid "Log out"
+msgstr "Log out"
+
+msgid "Вход"
+msgstr "Log in"
+
+msgid "Войти"
+msgstr "Log in"
+
+msgid "Log in"
+msgstr "Log in"
+
+msgid "Регистрация"
+msgstr "Register"
+
+msgid "Register"
+msgstr "Register"
+
+msgid "Главная"
+msgstr "Home"
+
+msgid "Home"
+msgstr "Home"
+
+msgid "Товары"
+msgstr "Products"
+
+msgid "Products"
+msgstr "Products"
+
+msgid "Заказы"
+msgstr "Orders"
+
+msgid "Orders"
+msgstr "Orders"
+
+msgid "Кабинет"
+msgstr "Account"
+
+msgid "Account"
+msgstr "Account"
+
+msgid "Обо мне"
+msgstr "About me"
+
+msgid "About me"
+msgstr "About me"
+
+msgid "Пользователи"
+msgstr "Users"
+
+msgid "Users"
+msgstr "Users"
+
+msgid "Новый товар"
+msgstr "New product"
+
+msgid "New product"
+msgstr "New product"
+
+msgid "Новый заказ"
+msgstr "New order"
+
+msgid "New order"
+msgstr "New order"
+
+msgid "Загрузка файла"
+msgstr "File upload"
+
+msgid "File upload"
+msgstr "File upload"
+
+msgid "Рабочие разделы"
+msgstr "Working sections"
+
+msgid "Working sections"
+msgstr "Working sections"
+
+msgid "Каталог товаров"
+msgstr "Product catalog"
+
+msgid "Product catalog"
+msgstr "Product catalog"
+
+msgid "Список заказов"
+msgstr "Order list"
+
+msgid "Order list"
+msgstr "Order list"
+
+msgid "Аккаунт"
+msgstr "Account"
+
+msgid "Личный кабинет"
+msgstr "Personal account"
+
+msgid "Personal account"
+msgstr "Personal account"
+
+msgid "Учебный магазин"
+msgstr "Study shop"
+
+msgid "Study shop"
+msgstr "Study shop"
+
+msgid "Создан"
+msgstr "Created"
+
+msgid "Created"
+msgstr "Created"
+
+msgid "Автор"
+msgstr "Author"
+
+msgid "Author"
+msgstr "Author"
+
+msgid "не указан"
+msgstr "not specified"
+
+msgid "not specified"
+msgstr "not specified"
+
+msgid "Статус"
+msgstr "Status"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "активный"
+msgstr "active"
+
+msgid "active"
+msgstr "active"
+
+msgid "Заказов с этим товаром"
+msgstr "Orders with this product"
+
+msgid "Orders with this product"
+msgstr "Orders with this product"
+
+msgid "К списку товаров"
+msgstr "Back to products"
+
+msgid "Back to products"
+msgstr "Back to products"
+
+msgid "Редактировать"
+msgstr "Edit"
+
+msgid "Edit"
+msgstr "Edit"
+
+msgid "Архивировать"
+msgstr "Archive"
+
+msgid "Archive"
+msgstr "Archive"
+
+msgid "Описание"
+msgstr "Description"
+
+msgid "Description"
+msgstr "Description"
+
+msgid "Связанные заказы"
+msgstr "Related orders"
+
+msgid "Related orders"
+msgstr "Related orders"
+
+msgid "Пользователь"
+msgstr "User"
+
+msgid "User"
+msgstr "User"
+
+msgid "не назначен"
+msgstr "not assigned"
+
+msgid "not assigned"
+msgstr "not assigned"
+
+msgid "Сумма"
+msgstr "Total"
+
+msgid "Total"
+msgstr "Total"
+
+msgid "Изображение"
+msgstr "Image"
+
+msgid "Image"
+msgstr "Image"
+
+msgid "товар"
+msgstr "product"
+
+msgid "product"
+msgstr "product"
+
+msgid "товары"
+msgstr "products"
+
+msgid "products"
+msgstr "products"
+
+msgid "заказ"
+msgstr "order"
+
+msgid "order"
+msgstr "order"
+
+msgid "заказы"
+msgstr "orders"
+
+msgid "orders"
+msgstr "orders"
+
+msgid "Изображение товара не загружено."
+msgstr "Product image is not uploaded yet."
+
+msgid "Product image is not uploaded yet."
+msgstr "Product image is not uploaded yet."
+
+msgid "Изображение товара не загружено. После добавления галереи в дипломной версии здесь можно будет показать несколько фото."
+msgstr "Product image is not uploaded yet. In the diploma version, a product gallery can be displayed here."
+
+msgid "The product image has not been uploaded yet. After the gallery is added in the diploma version, several photos can be shown here."
+msgstr "The product image has not been uploaded yet. After the gallery is added in the diploma version, several photos can be shown here."
+
+msgid "Product image is not uploaded yet. In the diploma version, a product gallery can be displayed here."
+msgstr "Product image is not uploaded yet. In the diploma version, a product gallery can be displayed here."
+
+msgid "Подробное описание товара «%(product_name)s» приведено выше в карточке товара."
+msgstr "A detailed description of the product “%(product_name)s” is shown above in the product card."
+
+msgid "A detailed description of the product “%(product_name)s” is shown above in the product card."
+msgstr "A detailed description of the product “%(product_name)s” is shown above in the product card."
+
+msgid "Заказ №%(order_pk)s от %(created_at)s"
+msgstr "Order #%(order_pk)s from %(created_at)s"
+
+msgid "Order #%(order_pk)s from %(created_at)s"
+msgstr "Order #%(order_pk)s from %(created_at)s"
+
+msgid "Связанных заказов пока нет."
+msgstr "No related orders yet."
+
+msgid "No related orders yet."
+msgstr "No related orders yet."
+
+msgid "Связанных заказов пока нет. После первого оформления заказа этот блок начнет заполняться автоматически."
+msgstr "No related orders yet. After the first order is placed, this block will be filled automatically."
+
+msgid "No related orders yet. After the first order is placed, this block will be filled automatically."
+msgstr "No related orders yet. After the first order is placed, this block will be filled automatically."
+
+msgid "There are no related orders yet. This block will be filled automatically after the first order is placed."
+msgstr "There are no related orders yet. This block will be filled automatically after the first order is placed."
+
+msgid "Для этого товара доступна %(images_count)s картинка."
+msgid_plural "Для этого товара доступно %(images_count)s картинки."
+msgstr[0] "There is %(images_count)s image available for this product."
+msgstr[1] "There are %(images_count)s images available for this product."
+
+msgid "There is %(images_count)s image available for this product."
+msgid_plural "There are %(images_count)s images available for this product."
+msgstr[0] "There is %(images_count)s image available for this product."
+msgstr[1] "There are %(images_count)s images available for this product."

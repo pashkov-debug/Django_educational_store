@@ -1,0 +1,173 @@
+{% extends "frontend/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="Middle Middle_top">
+  <div class="Middle-top">
+    <div class="wrap">
+      <div class="Middle-header">
+        <h1 class="Middle-title">Checkout</h1>
+        <ul class="breadcrumbs Middle-breadcrumbs">
+          <li class="breadcrumbs-item"><a href="/">Home</a></li>
+          <li class="breadcrumbs-item breadcrumbs-item_current"><span>Checkout</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="Section Section_column Section_columnRight Section_columnWide Order">
+    <div class="wrap">
+      <div class="Section-column">
+        <div class="Section-columnSection">
+          <header class="Section-header">
+            <strong class="Section-title">Checkout steps</strong>
+          </header>
+          <div class="Section-columnContent">
+            <ul class="menu menu_vt Order-navigate">
+              <li class="menu-item_ACTIVE menu-item"><a class="menu-link" href="#step1">Step 1. Customer</a></li>
+              <li class="menu-item"><a class="menu-link" href="#step2">Step 2. Delivery</a></li>
+              <li class="menu-item"><a class="menu-link" href="#step3">Step 3. Payment</a></li>
+              <li class="menu-item"><a class="menu-link" href="#step4">Step 4. Confirmation</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="Section-content">
+        <form class="form" @submit.prevent="confirmOrder">
+          <div class="Order-block Order-block_OPEN" id="step1">
+            <header class="Section-header Section-header_sm">
+              <h2 class="Section-title">Step 1. Customer</h2>
+            </header>
+            <div class="row">
+              <div class="row-block">
+                <div class="form-group">
+                  <label class="form-label" for="name">Full name</label>
+                  <input class="form-input" v-model="fullName" id="name" name="name" type="text"/>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="phone">Phone</label>
+                  <input class="form-input" v-model="phone" id="phone" name="phone" type="text"/>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="mail">E-mail</label>
+                  <input class="form-input" v-model="email" id="mail" name="mail" type="text"/>
+                </div>
+                {% if not user.is_authenticated %}
+                <div class="form-group">
+                  <a class="btn btn_muted" href="/sign-in/">Already registered? Sign in</a>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+            <div class="Order-footer"><a class="btn btn_success Order-next" href="#step2">Next</a></div>
+          </div>
+
+          <div class="Order-block" id="step2">
+            <header class="Section-header Section-header_sm">
+              <h2 class="Section-title">Step 2. Delivery</h2>
+            </header>
+            <div class="form-group">
+              <div>
+                <label class="toggle">
+                  <input type="radio" v-model="deliveryType" name="delivery" value="delivery" checked="checked"/><span class="toggle-box"></span><span class="toggle-text">Delivery</span>
+                </label>
+              </div>
+              <div>
+                <label class="toggle">
+                  <input type="radio" v-model="deliveryType" name="delivery" value="express"/><span class="toggle-box"></span><span class="toggle-text">Express delivery</span>
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="city">City</label>
+              <input class="form-input" v-model="city" id="city" name="city" type="text"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="address">Address</label>
+              <textarea class="form-textarea" v-model="address" name="address" id="address"></textarea>
+            </div>
+            <div class="Order-footer"><a class="btn btn_success Order-next" href="#step3">Next</a></div>
+          </div>
+
+          <div class="Order-block" id="step3">
+            <header class="Section-header Section-header_sm">
+              <h2 class="Section-title">Step 3. Payment</h2>
+            </header>
+            <div class="form-group">
+              <div>
+                <label class="toggle">
+                  <input type="radio" v-model="paymentType" name="pay" value="card" checked="checked"/><span class="toggle-box"></span><span class="toggle-text">Online card</span>
+                </label>
+              </div>
+              <div>
+                <label class="toggle">
+                  <input type="radio" v-model="paymentType" name="pay" value="random_account"/><span class="toggle-box"></span><span class="toggle-text">Online random account</span>
+                </label>
+              </div>
+            </div>
+            <div class="Order-footer"><a class="btn btn_success Order-next" href="#step4">Next</a></div>
+          </div>
+
+          <div class="Order-block" id="step4">
+            <header class="Section-header Section-header_sm">
+              <h2 class="Section-title">Step 4. Confirmation</h2>
+            </header>
+            <div class="Order-infoBlock">
+              <div class="Order-personal">
+                <div class="row">
+                  <div class="row-block">
+                    <div class="Order-info"><div class="Order-infoType">Full name:</div><div class="Order-infoContent">${ fullName }$</div></div>
+                    <div class="Order-info"><div class="Order-infoType">Phone:</div><div class="Order-infoContent">${ phone }$</div></div>
+                    <div class="Order-info"><div class="Order-infoType">E-mail:</div><div class="Order-infoContent">${ email }$</div></div>
+                  </div>
+                  <div class="row-block">
+                    <div class="Order-info Order-info_delivery"><div class="Order-infoType">Delivery type:</div><div class="Order-infoContent">${ deliveryType }$</div></div>
+                    <div class="Order-info"><div class="Order-infoType">City:</div><div class="Order-infoContent">${ city }$</div></div>
+                    <div class="Order-info"><div class="Order-infoType">Address:</div><div class="Order-infoContent">${ address }$</div></div>
+                    <div class="Order-info Order-info_pay"><div class="Order-infoType">Payment:</div><div class="Order-infoContent">${ paymentType }$</div></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="Cart Cart_order">
+                <div v-for="product in products" class="Cart-product">
+                  <div class="Cart-block Cart-block_row">
+                    <div class="Cart-block Cart-block_pict">
+                      <a class="Cart-pict" :href="`/product/${product.id}/`">
+                        <img class="Cart-img" :src="product.images.length ? product.images[0].src : ''" :alt="product.images.length ? product.images[0].alt : product.title"/>
+                      </a>
+                    </div>
+                    <div class="Cart-block Cart-block_info">
+                      <a class="Cart-title" :href="`/product/${product.id}/`">${ product.title }$</a>
+                      <div class="Cart-desc">${ product.description }$</div>
+                    </div>
+                    <div class="Cart-block Cart-block_price">
+                      <div class="Cart-price">${ product.price }$$</div>
+                    </div>
+                  </div>
+                  <div class="Cart-block Cart-block_row">
+                    <div class="Cart-block Cart-block_amount">${ product.count }$ pcs.</div>
+                  </div>
+                </div>
+
+                <div class="Cart-total">
+                  <div class="Cart-block Cart-block_total">
+                    <strong class="Cart-title">Total:</strong>
+                    <span class="Cart-price">${ totalCost }$$</span>
+                  </div>
+                  <div class="Cart-block">
+                    <button class="btn btn_primary btn_lg" type="submit">Proceed to payment</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block mixins %}
+<script src="{% static 'frontend/assets/js/order-detail.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,59 @@
+[
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$oBAPiuJAiigwq6DNKOO4ZA$GdXHdveVF1izf23VJ0inT9Z+AKQTHp4Vy40JXTtbHro=",
+    "last_login": "2026-04-16T12:49:58.209Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-04-15T19:45:59.741Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$XJduXHThbHR2qZu1sB5raf$V5lN+OchRrOaYPTPz24YIxzX/0RzH74Rnv+/gCKAR0U=",
+    "last_login": "2026-04-15T20:44:50.976Z",
+    "is_superuser": false,
+    "username": "test",
+    "first_name": "",
+    "last_name": "",
+    "email": "admin@doppsy.ru",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-04-15T20:44:47.202Z",
+    "groups": [],
+    "user_permissions": [
+      25,
+      26
+    ]
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$mSCHL2ZXn01wtCeyYwyvKS$eE1qwXZECs0xuxg9osfzgo7kknvf3mnSisPOSpf/ac0=",
+    "last_login": "2026-04-16T12:43:52.294Z",
+    "is_superuser": false,
+    "username": "test2",
+    "first_name": "",
+    "last_name": "",
+    "email": "pashkovnpc@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-04-16T12:29:12.504Z",
+    "groups": [],
+    "user_permissions": []
+  }
+}
+]
