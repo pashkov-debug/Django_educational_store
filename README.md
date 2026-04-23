@@ -1,0 +1,1 @@
+# Django_educational_store
