@@ -21,18 +21,36 @@ def env_list(name: str, default: list[str]) -> list[str]:
     value = os.getenv(name)
     if not value:
         return default
-    if value.strip() == "*":
-        return ["*"]
     return [item.strip() for item in value.split(",") if item.strip()]
 
 
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-change-me")
+SECRET_KEY = os.getenv(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-local-dev-only-change-me",
+)
+
 DEBUG = env_bool("DJANGO_DEBUG", True)
-ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", ["127.0.0.1", "localhost", "testserver"])
+
+ALLOWED_HOSTS = env_list(
+    "DJANGO_ALLOWED_HOSTS",
+    ["127.0.0.1", "localhost", "testserver", "89.232.176.127"],
+)
+
+CSRF_TRUSTED_ORIGINS = env_list(
+    "DJANGO_CSRF_TRUSTED_ORIGINS",
+    [
+        "http://127.0.0.1:8000",
+        "http://localhost:8000",
+        "http://89.232.176.127:8000",
+    ],
+)
+
+ENABLE_DEBUG_TOOLBAR = DEBUG and env_bool("DJANGO_ENABLE_DEBUG_TOOLBAR", False) and not TESTING
 
 
 def build_internal_ips() -> list[str]:
     internal_ips = ["127.0.0.1"]
+
     try:
         _, _, ips = socket.gethostbyname_ex(socket.gethostname())
         for ip in ips:
@@ -44,6 +62,7 @@ def build_internal_ips() -> list[str]:
                     internal_ips.append(docker_gateway)
     except socket.gaierror:
         pass
+
     return internal_ips
 
 
@@ -76,7 +95,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-if DEBUG and not TESTING:
+if ENABLE_DEBUG_TOOLBAR:
     INSTALLED_APPS += ["debug_toolbar"]
     MIDDLEWARE = [
         "debug_toolbar.middleware.DebugToolbarMiddleware",
@@ -93,7 +112,6 @@ TEMPLATES = [
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.request",
-                "django.template.context_processors.csrf",
                 "django.template.context_processors.i18n",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
@@ -107,7 +125,7 @@ WSGI_APPLICATION = "myfistsite.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.getenv("SQLITE_PATH", str(BASE_DIR / "db.sqlite3")),
+        "NAME": Path(os.getenv("DJANGO_DB_NAME", str(BASE_DIR / "db.sqlite3"))),
     }
 }
 
@@ -154,8 +172,8 @@ SPECTACULAR_SETTINGS = {
     ],
 }
 
-LANGUAGE_CODE = os.getenv("DJANGO_LANGUAGE_CODE", "en")
-TIME_ZONE = os.getenv("DJANGO_TIME_ZONE", "Europe/Moscow")
+LANGUAGE_CODE = "ru"
+TIME_ZONE = "Europe/Moscow"
 
 USE_I18N = True
 USE_TZ = True
@@ -170,21 +188,14 @@ LOCALE_PATHS = [
 ]
 
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = Path(os.getenv("DJANGO_STATIC_ROOT", str(BASE_DIR / "staticfiles")))
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = Path(os.getenv("DJANGO_MEDIA_ROOT", str(BASE_DIR / "media")))
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
-
 MAX_UPLOAD_SIZE = 1024 * 1024
-
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "myfistsite-default-cache",
-    }
-}
 
 LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "shopapp:index"

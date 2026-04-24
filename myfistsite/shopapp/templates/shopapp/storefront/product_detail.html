@@ -1,0 +1,188 @@
+{% extends "shopapp/storefront/base.html" %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="Middle Middle_top">
+    <div class="Middle-top">
+        <div class="wrap">
+            <div class="Middle-header">
+                <h1 class="Middle-title">{{ product.name }}</h1>
+                <ul class="breadcrumbs Middle-breadcrumbs">
+                    <li class="breadcrumbs-item">
+                        <a href="{% url 'shopapp:index' %}">Главная</a>
+                    </li>
+                    <li class="breadcrumbs-item">
+                        <a href="{% url 'shopapp:products_list' %}">Товары</a>
+                    </li>
+                    {% if product.category %}
+                        <li class="breadcrumbs-item">
+                            <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a>
+                        </li>
+                    {% endif %}
+                    <li class="breadcrumbs-item breadcrumbs-item_current">
+                        <span>{{ product.name }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="Section">
+        <div class="wrap">
+            <div class="Product">
+                <div class="ProductCard">
+                    <div class="ProductCard-look">
+                        <div class="ProductCard-photo">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <div style="padding: 24px; text-align: center;">
+                                    Изображение товара не загружено. После добавления галереи здесь можно будет показать несколько фото.
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="ProductCard-desc">
+                        <div class="ProductCard-header">
+                            <h2 class="ProductCard-title">{{ product.name }}</h2>
+                            <div class="ProductCard-info">
+                                <div class="ProductCard-cost">
+                                    <div class="ProductCard-price">₽{{ product.final_price }}</div>
+                                    {% if product.has_discount %}
+                                        <div class="ProductCard-priceOld">₽{{ product.price }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ProductCard-text">
+                            <p>{{ product.description }}</p>
+
+                            {% if product.category %}
+                                <p><strong>Категория:</strong> <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a></p>
+                            {% endif %}
+
+                            {% if product.manufacturer %}
+                                <p><strong>Производитель:</strong> {{ product.manufacturer.name }}</p>
+                            {% endif %}
+
+                            <p><strong>Создан:</strong> {{ product.created_at|date:"d.m.Y H:i" }}</p>
+                            <p>
+                                <strong>Автор:</strong>
+                                {% if product.created_by %}
+                                    {{ product.created_by }}
+                                {% else %}
+                                    не указан
+                                {% endif %}
+                            </p>
+                            <p><strong>Статус:</strong> активный</p>
+                            <p><strong>Заказов с этим товаром:</strong> {{ product.orders_count }}</p>
+                            <p><strong>Отзывов:</strong> {{ product.reviews_count }}</p>
+                            <p>
+                                Для этого товара доступно изображений: {{ images_count }}.
+                            </p>
+                        </div>
+
+                        <div class="buttons">
+                            <form action="{% url 'shopapp:cart_add' product.pk %}" method="post" style="display: inline-flex; gap: 8px; align-items: center;">
+                                {% csrf_token %}
+                                <input class="form-input" type="number" name="quantity" value="1" min="1" style="width: 90px;">
+                                <input type="hidden" name="next" value="{% url 'shopapp:layout_cart' %}">
+                                <button class="btn btn_primary" type="submit">Купить</button>
+                            </form>
+
+                            <a class="btn btn_default" href="{% url 'shopapp:products_list' %}">
+                                К списку товаров
+                            </a>
+                            {% if user.is_superuser or perms.shopapp.change_product and user == product.created_by %}
+                                <a class="btn btn_default" href="{% url 'shopapp:product_update' product.pk %}">
+                                    Редактировать
+                                </a>
+                                <a class="btn btn_default" href="{% url 'shopapp:product_archive' product.pk %}">
+                                    Архивировать
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="Tabs Tabs_default">
+                <div class="Tabs-links">
+                    <a class="Tabs-link_ACTIVE Tabs-link" href="#description">
+                        <span>Описание</span>
+                    </a>
+                    <a class="Tabs-link" href="#orders">
+                        <span>Связанные заказы</span>
+                    </a>
+                    <a class="Tabs-link" href="#reviews">
+                        <span>Отзывы</span>
+                    </a>
+                </div>
+
+                <div class="Tabs-wrap">
+                    <div class="Tabs-block" id="description">
+                        Подробное описание товара «{{ product.name }}» приведено выше в карточке товара.
+                    </div>
+
+                    <div class="Tabs-block" id="orders">
+                        {% if related_orders %}
+                            <div class="Orders">
+                                {% for order in related_orders %}
+                                    <div class="Order Order_anons">
+                                        <div class="Order-personal">
+                                            <div class="row">
+                                                <div class="row-block">
+                                                    <a class="Order-title" href="{% url 'shopapp:order_detail' order.pk %}">
+                                                        Заказ №{{ order.pk }} от {{ order.created_at|date:"d.m.Y H:i" }}
+                                                    </a>
+                                                    <div class="Account-editLink">
+                                                        {{ order.delivery_address|truncatechars:90 }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="row-block">
+                                                    <div class="Order-info">
+                                                        <div class="Order-infoType">Пользователь:</div>
+                                                        <div class="Order-infoContent">
+                                                            {% if order.user %}
+                                                                {{ order.user.username }}
+                                                            {% else %}
+                                                                не назначен
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="Order-info">
+                                                        <div class="Order-infoType">Статус:</div>
+                                                        <div class="Order-infoContent">{{ order.status }}</div>
+                                                    </div>
+
+                                                    <div class="Order-info">
+                                                        <div class="Order-infoType">Сумма:</div>
+                                                        <div class="Order-infoContent">₽{{ order.total_price }}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p>
+                                Связанных заказов пока нет. После первого оформления заказа этот блок начнет заполняться автоматически.
+                            </p>
+                        {% endif %}
+                    </div>
+
+                    <div class="Tabs-block" id="reviews">
+                        <p>Отзывы будут подключены отдельным шагом. Сейчас на странице подготовлено место из storefront-макета.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends "shopapp/storefront/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Скидки" %}{% endblock %}
+
+{% block content %}
+<div class="Middle Middle_top">
+    <div class="Middle-top">
+        <div class="wrap">
+            <div class="Middle-header">
+                <h1 class="Middle-title">{% trans "Скидки" %}</h1>
+                <ul class="breadcrumbs Middle-breadcrumbs">
+                    <li class="breadcrumbs-item">
+                        <a href="{% url 'shopapp:index' %}">{% trans "Главная" %}</a>
+                    </li>
+                    <li class="breadcrumbs-item breadcrumbs-item_current">
+                        <span>{% trans "Скидки" %}</span>
+                    </li>
+                </ul>
+                <p>{% trans "Товары с активной скидкой из каталога." %}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="Section">
+        <div class="wrap">
+            <div class="Cards Cards_blog">
+                {% for product in sale_products %}
+                    <div class="Card">
+                        <a class="Card-picture" href="{% url 'shopapp:product_detail' product.pk %}">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <div style="padding: 24px; text-align: center;">{% trans "Изображение товара не загружено." %}</div>
+                            {% endif %}
+                        </a>
+
+                        <div class="Card-date">
+                            <strong class="Card-date-number">-{{ product.discount }}%</strong>
+                        </div>
+
+                        <div class="Card-content">
+                            <strong class="Card-title">
+                                <a href="{% url 'shopapp:product_detail' product.pk %}">{{ product.name }}</a>
+                            </strong>
+
+                            <div class="Card-description">
+                                {{ product.display_description|truncatechars:120 }}
+                            </div>
+
+                            {% if product.category %}
+                                <div class="Card-description">
+                                    {% trans "Категория" %}:
+                                    <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a>
+                                </div>
+                            {% endif %}
+
+                            {% if product.manufacturer %}
+                                <div class="Card-description">
+                                    {% trans "Производитель" %}: {{ product.manufacturer.name }}
+                                </div>
+                            {% endif %}
+
+                            <div class="Card-cost" style="margin-top: 12px;">
+                                <span class="Card-price">₽{{ product.final_price }}</span>
+                                <span class="Card-oldPrice">₽{{ product.price }}</span>
+                            </div>
+
+                            <div class="buttons" style="margin-top: 12px;">
+                                <a class="btn btn_default" href="{% url 'shopapp:product_detail' product.pk %}">{% trans "Открыть" %}</a>
+
+                                <form action="{% url 'shopapp:cart_add' product.pk %}" method="post" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="quantity" value="1">
+                                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                    <button class="btn btn_primary" type="submit">{% trans "Купить" %}</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="Card Card_main">
+                        <div class="Card-content">
+                            <strong class="Card-title">{% trans "Скидок пока нет" %}</strong>
+                            <div class="Card-description">
+                                {% trans "Сейчас в каталоге нет товаров с активной скидкой." %}
+                            </div>
+                            <div class="buttons" style="margin-top: 18px;">
+                                <a class="btn btn_primary" href="{% url 'shopapp:products_list' %}">{% trans "Перейти в каталог" %}</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            {% if is_paginated %}
+                <div class="Pagination" style="margin-top: 28px;">
+                    {% if page_obj.has_previous %}
+                        <a class="btn btn_default" href="?page={{ page_obj.previous_page_number }}">{% trans "Назад" %}</a>
+                    {% endif %}
+
+                    <span style="margin: 0 12px;">
+                        {% blocktrans trimmed with current_page=page_obj.number total_pages=page_obj.paginator.num_pages %}
+                            Страница {{ current_page }} из {{ total_pages }}
+                        {% endblocktrans %}
+                    </span>
+
+                    {% if page_obj.has_next %}
+                        <a class="btn btn_default" href="?page={{ page_obj.next_page_number }}">{% trans "Вперёд" %}</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

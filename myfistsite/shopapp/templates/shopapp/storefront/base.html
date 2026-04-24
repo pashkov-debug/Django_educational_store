@@ -1,0 +1,243 @@
+{% load static i18n storefront_tags %}
+{% active_categories as storefront_categories %}
+{% cart_summary as cart_state %}
+{% trans "Интернет-магазин" as logo_alt %}
+{% trans "Корзина" as cart_alt %}
+{% trans "Поиск по товарам" as search_placeholder %}
+<!DOCTYPE html>
+{% get_current_language as CURRENT_LANGUAGE_CODE %}
+{% get_available_languages as AVAILABLE_LANGUAGES %}
+<html lang="{{ CURRENT_LANGUAGE_CODE|default:'ru' }}">
+<head>
+    <title>{% block title %}{% trans "Учебный интернет-магазин" %}{% endblock %}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href="{% static 'shopapp/storefront/favicon.ico' %}" rel="shortcut icon">
+    <link rel="stylesheet" href="{% static 'shopapp/storefront/assets/css/fonts.css' %}">
+    <link rel="stylesheet" href="{% static 'shopapp/storefront/assets/css/basic.css' %}">
+    <link rel="stylesheet" href="{% static 'shopapp/storefront/assets/css/extra.css' %}">
+</head>
+<body class="Site">
+<header class="Header">
+    <div class="ControlPanel">
+        <div class="wrap">
+            <div class="row ControlPanel-row">
+                <div class="row-block">
+                    <div class="row ControlPanel-rowSplit">
+                        <div class="row-block hide_700">
+                            <span class="ControlPanel-title">{% trans "Интернет-магазин · storefront" %}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <nav class="row-block">
+                    <div class="row ControlPanel-rowSplit">
+                        <div class="row-block">
+                            <a class="ControlPanel-title" href="{% url 'admin:login' %}">{% trans "Админка" %}</a>
+                        </div>
+
+                        <div class="row-block">
+                            <form id="language-switch-form"
+                                  action="{% url 'set_language' %}"
+                                  method="post"
+                                  style="display: inline-flex; align-items: center; gap: 8px;">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" id="language-next" value="{{ request.get_full_path }}">
+                                <label class="ControlPanel-title" for="language-select">{% trans "Язык" %}</label>
+                                <select id="language-select" name="language">
+                                    {% for language_code, language_name in AVAILABLE_LANGUAGES %}
+                                        <option value="{{ language_code }}"{% if language_code == CURRENT_LANGUAGE_CODE %} selected{% endif %}>
+                                            {{ language_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+
+                            <script>
+                            (function () {
+                                const form = document.getElementById("language-switch-form");
+                                const select = document.getElementById("language-select");
+                                const nextInput = document.getElementById("language-next");
+
+                                if (!form || !select || !nextInput) {
+                                    return;
+                                }
+
+                                function buildNextPath(lang) {
+                                    const path = window.location.pathname;
+                                    const query = window.location.search || "";
+                                    const stripped = path.replace(/^\/(ru|en)(?=\/|$)/, "") || "/";
+                                    return "/" + lang + stripped + query;
+                                }
+
+                                select.addEventListener("change", function () {
+                                    nextInput.value = buildNextPath(select.value);
+                                    form.submit();
+                                });
+                            })();
+                            </script>
+                        </div>
+
+                        {% if user.is_authenticated %}
+                            <div class="row-block">
+                                <a class="ControlPanel-title" href="{% url 'accounts:account' %}">{{ user.username }}</a>
+                            </div>
+                            <div class="row-block">
+                                <form action="{% url 'accounts:logout' %}" method="post" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button class="ControlPanel-title" type="submit" style="background: none; border: none; padding: 0; cursor: pointer;">
+                                        {% trans "Выйти" %}
+                                    </button>
+                                </form>
+                            </div>
+                        {% else %}
+                            <div class="row-block">
+                                <a class="ControlPanel-title" href="{% url 'accounts:login' %}">{% trans "Войти" %}</a>
+                            </div>
+                            <div class="row-block">
+                                <a class="ControlPanel-title" href="{% url 'accounts:register' %}">{% trans "Регистрация" %}</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <div class="wrap">
+        <div class="row Header-rowMain">
+            <div class="row-block Header-logo">
+                <a class="logo" href="{% url 'shopapp:index' %}">
+                    <img class="logo-image" src="{% static 'shopapp/storefront/assets/img/logo.png' %}" alt="{{ logo_alt }}">
+                </a>
+            </div>
+
+            <div class="row-block Header-search" style="flex: 1; padding: 0 24px;">
+                <form action="{% url 'shopapp:products_list' %}" method="get" style="display: flex; gap: 8px;">
+                    <input class="form-input"
+                           type="search"
+                           name="q"
+                           value="{{ request.GET.q }}"
+                           placeholder="{{ search_placeholder }}"
+                           style="width: 100%;">
+                    <button class="btn btn_primary" type="submit">{% trans "Найти" %}</button>
+                </form>
+            </div>
+
+            <div class="row-block">
+                <a class="CartBlock" href="{% url 'shopapp:layout_cart' %}">
+                    <div class="CartBlock-block">
+                        <img class="CartBlock-img" src="{% static 'shopapp/storefront/assets/img/icons/cart.svg' %}" alt="{{ cart_alt }}">
+                        <span class="CartBlock-amount">{{ cart_state.total_quantity }}</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <nav class="Header-menu" style="margin-top: 18px;">
+            <div id="navigate">
+                <ul class="menu menu_main">
+                    <li class="menu-item"><a class="menu-link" href="{% url 'shopapp:index' %}">{% trans "Главная" %}</a></li>
+                    <li class="menu-item"><a class="menu-link" href="{% url 'shopapp:products_list' %}">{% trans "Каталог" %}</a></li>
+                    <li class="menu-item"><a class="menu-link" href="{% url 'shopapp:layout_sale' %}">{% trans "Скидки" %}</a></li>
+                    <li class="menu-item"><a class="menu-link" href="{% url 'shopapp:layout_about' %}">{% trans "О магазине" %}</a></li>
+                    <li class="menu-item"><a class="menu-link" href="{% url 'shopapp:layout_cart' %}">{% trans "Корзина" %}</a></li>
+                    <li class="menu-item"><a class="menu-link" href="{% url 'shopapp:orders_list' %}">{% trans "Заказы" %}</a></li>
+
+                    {% if user.is_authenticated %}
+                        <li class="menu-item"><a class="menu-link" href="{% url 'accounts:account' %}">{% trans "Личный кабинет" %}</a></li>
+                        <li class="menu-item"><a class="menu-link" href="{% url 'accounts:about_me' %}">{% trans "Профиль" %}</a></li>
+                    {% endif %}
+
+                    {% if perms.shopapp.add_product %}
+                        <li class="menu-item"><a class="menu-link" href="{% url 'shopapp:product_create' %}">{% trans "Добавить товар" %}</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+
+        {% if storefront_categories %}
+            <nav class="Header-categories" style="margin-top: 16px;">
+                <strong style="display: block; margin-bottom: 8px;">{% trans "Категории" %}</strong>
+                <ul class="menu menu_main">
+                    {% for category in storefront_categories %}
+                        <li class="menu-item">
+                            <a class="menu-link" href="{{ category.get_absolute_url }}">
+                                {% if category.icon %}
+                                    <img src="{{ category.icon.url }}" alt="" style="height: 18px; vertical-align: middle; margin-right: 6px;">
+                                {% endif %}
+                                {{ category.name }}
+                            </a>
+
+                            {% if category.active_menu_children %}
+                                <ul class="menu menu_vt" style="margin-top: 6px;">
+                                    {% for child in category.active_menu_children %}
+                                        <li class="menu-item">
+                                            <a class="menu-link" href="{{ child.get_absolute_url }}">{{ child.name }}</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+</header>
+
+{% if messages %}
+    <div class="Section">
+        <div class="wrap">
+            {% for message in messages %}
+                <div class="Card Card_main" style="margin-top: 24px;">
+                    <div class="Card-content" style="padding: 18px 22px;">
+                        <strong class="Card-title">{{ message }}</strong>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
+{% block content %}{% endblock %}
+
+<footer class="Footer">
+    <div class="wrap">
+        <div class="row Footer-main">
+            <div class="row-block">
+                <a class="logo Footer-logo" href="{% url 'shopapp:index' %}">
+                    <img class="logo-image" src="{% static 'shopapp/storefront/assets/img/logo_footer.png' %}" alt="{{ logo_alt }}">
+                </a>
+            </div>
+
+            <div class="row-block">
+                <strong class="Footer-title">{% trans "Разделы магазина" %}</strong>
+                <ul class="menu menu_vt">
+                    <li class="menu-item"><a class="menu-link" href="{% url 'shopapp:index' %}">{% trans "Главная" %}</a></li>
+                    <li class="menu-item"><a class="menu-link" href="{% url 'shopapp:products_list' %}">{% trans "Каталог товаров" %}</a></li>
+                    <li class="menu-item"><a class="menu-link" href="{% url 'shopapp:layout_sale' %}">{% trans "Скидки" %}</a></li>
+                    <li class="menu-item"><a class="menu-link" href="{% url 'shopapp:layout_about' %}">{% trans "О магазине" %}</a></li>
+                    <li class="menu-item"><a class="menu-link" href="{% url 'shopapp:layout_cart' %}">{% trans "Корзина" %}</a></li>
+                    <li class="menu-item"><a class="menu-link" href="{% url 'shopapp:orders_list' %}">{% trans "Список заказов" %}</a></li>
+                    <li class="menu-item"><a class="menu-link" href="{% url 'admin:index' %}">{% trans "Админка" %}</a></li>
+                </ul>
+            </div>
+
+            <div class="row-block">
+                <strong class="Footer-title">{% trans "Аккаунт" %}</strong>
+                <ul class="menu menu_vt">
+                    {% if user.is_authenticated %}
+                        <li class="menu-item"><a class="menu-link" href="{% url 'accounts:account' %}">{% trans "Личный кабинет" %}</a></li>
+                        <li class="menu-item"><a class="menu-link" href="{% url 'accounts:about_me' %}">{% trans "Профиль" %}</a></li>
+                    {% else %}
+                        <li class="menu-item"><a class="menu-link" href="{% url 'accounts:login' %}">{% trans "Войти" %}</a></li>
+                        <li class="menu-item"><a class="menu-link" href="{% url 'accounts:register' %}">{% trans "Регистрация" %}</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

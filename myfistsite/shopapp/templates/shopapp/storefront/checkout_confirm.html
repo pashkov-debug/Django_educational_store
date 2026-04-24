@@ -1,0 +1,82 @@
+{% extends "shopapp/storefront/base.html" %}
+
+{% block title %}Оформление заказа — подтверждение{% endblock %}
+
+{% block content %}
+<div class="Middle Middle_top">
+    <div class="Middle-top">
+        <div class="wrap">
+            <div class="Middle-header">
+                <h1 class="Middle-title">Подтверждение заказа</h1>
+                <ul class="breadcrumbs Middle-breadcrumbs">
+                    <li class="breadcrumbs-item"><a href="{% url 'shopapp:index' %}">Главная</a></li>
+                    <li class="breadcrumbs-item"><a href="{% url 'shopapp:checkout_payment' %}">Оплата</a></li>
+                    <li class="breadcrumbs-item breadcrumbs-item_current"><span>Подтверждение</span></li>
+                </ul>
+                <p>Шаг {{ checkout_step }} из 4 — проверьте данные заказа.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="Section">
+        <div class="wrap">
+            <div class="Order-block">
+                <h2>Покупатель</h2>
+                <p><strong>Ф. И. О.:</strong> {{ customer.full_name }}</p>
+                <p><strong>Email:</strong> {{ customer.email }}</p>
+                <p><strong>Телефон:</strong> {{ customer.phone }}</p>
+
+                <h2>Доставка</h2>
+                <p><strong>Способ доставки:</strong> {{ delivery_type_label }}</p>
+                <p><strong>Город:</strong> {{ delivery.city }}</p>
+                <p><strong>Адрес:</strong> {{ delivery.address }}</p>
+                <p><strong>Стоимость доставки:</strong> ₽{{ delivery_price }}</p>
+
+                <h2>Оплата</h2>
+                <p><strong>Способ оплаты:</strong> {{ payment_type_label }}</p>
+            </div>
+
+            <div class="Cart">
+                {% for item in cart_items %}
+                    <div class="Cart-product">
+                        <div class="Cart-block Cart-block_row">
+                            <div class="Cart-block Cart-block_info">
+                                <a class="Cart-title" href="{% url 'shopapp:product_detail' item.product.pk %}">
+                                    {{ item.product.name }}
+                                </a>
+                                <div class="Cart-desc">
+                                    {{ item.quantity }} × ₽{{ item.price_snapshot }}
+                                </div>
+                            </div>
+                            <div class="Cart-block Cart-block_summ">
+                                <strong>Сумма:</strong> ₽{{ item.total_price }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <form class="form" method="post">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="{{ form.comment.id_for_label }}">{{ form.comment.label }}</label>
+                    {{ form.comment }}
+                    {{ form.comment.errors }}
+                </div>
+
+                <div class="Cart-total">
+                    <div><strong>Сумма товаров:</strong> ₽{{ cart_items_price }}</div>
+                    <div><strong>Доставка:</strong> ₽{{ delivery_price }}</div>
+                    <div><strong>Итого:</strong> ₽{{ order_total_price }}</div>
+                </div>
+
+                <div class="buttons">
+                    <a class="btn btn_default" href="{% url 'shopapp:checkout_payment' %}">Назад</a>
+                    <button class="btn btn_primary" type="submit">Оплатить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

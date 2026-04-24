@@ -87,20 +87,3 @@ class OrderSerializer(serializers.ModelSerializer):
         if not value:
             raise serializers.ValidationError("Выберите хотя бы один товар.")
         return value
-
-
-class UserOrdersExportSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(read_only=True)
-    products = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-
-    class Meta:
-        model = Order
-        fields = (
-            "id",
-            "delivery_address",
-            "promo_code",
-            "status",
-            "created_at",
-            "user",
-            "products",
-        )

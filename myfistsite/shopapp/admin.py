@@ -1,4 +1,3 @@
-
 import csv
 from io import StringIO
 
@@ -10,51 +9,119 @@ from django.urls import path, reverse
 from django.utils.html import format_html
 
 from .forms import OrderImportForm
-from .models import Category, Order, OrderItem, Product, Review, ShopSettings
+from .models import Category, Manufacturer, Order, Product
 
 
 class SoftDeleteAdminMixin:
     archive_field_name = "archived"
 
     def delete_model(self, request, obj):
-        if hasattr(obj, self.archive_field_name):
-            setattr(obj, self.archive_field_name, True)
-            obj.save(update_fields=[self.archive_field_name])
-            return
-        super().delete_model(request, obj)
+        setattr(obj, self.archive_field_name, True)
+        obj.save(update_fields=[self.archive_field_name])
 
     def delete_queryset(self, request, queryset):
-        if queryset.model and hasattr(queryset.model, self.archive_field_name):
-            queryset.update(**{self.archive_field_name: True})
-            return
-        super().delete_queryset(request, queryset)
+        queryset.update(**{self.archive_field_name: True})
 
     def get_actions(self, request):
         actions = super().get_actions(request)
-        if hasattr(self.model, self.archive_field_name):
-            actions.pop("delete_selected", None)
+        actions.pop("delete_selected", None)
         return actions
 
 
-class OrderItemInline(admin.TabularInline):
-    model = OrderItem
-    extra = 0
-    autocomplete_fields = ("product",)
+@admin.action(description="Архивировать выбранные категории")
+def archive_categories(modeladmin, request, queryset):
+    queryset.update(archived=True, is_active=False)
 
 
-class ReviewInline(admin.TabularInline):
-    model = Review
-    extra = 0
-    fields = ("author", "email", "rate", "text", "created_at", "is_active")
-    readonly_fields = ("created_at",)
+@admin.action(description="Восстановить выбранные категории")
+def restore_categories(modeladmin, request, queryset):
+    queryset.update(archived=False, is_active=True)
+
+
+@admin.action(description="Архивировать выбранных производителей")
+def archive_manufacturers(modeladmin, request, queryset):
+    queryset.update(archived=True)
+
+
+@admin.action(description="Восстановить выбранных производителей")
+def restore_manufacturers(modeladmin, request, queryset):
+    queryset.update(archived=False)
+
+
+@admin.action(description="Архивировать выбранные товары")
+def archive_products(modeladmin, request, queryset):
+    queryset.update(archived=True)
+
+
+@admin.action(description="Восстановить выбранные товары из архива")
+def restore_products(modeladmin, request, queryset):
+    queryset.update(archived=False)
+
+
+@admin.action(description="Архивировать выбранные заказы")
+def archive_orders(modeladmin, request, queryset):
+    queryset.update(archived=True)
+
+
+@admin.action(description="Восстановить выбранные заказы из архива")
+def restore_orders(modeladmin, request, queryset):
+    queryset.update(archived=False)
 
 
 @admin.register(Category)
 class CategoryAdmin(SoftDeleteAdminMixin, admin.ModelAdmin):
-    list_display = ("pk", "title", "parent", "sort_index", "is_active", "archived")
-    list_filter = ("is_active", "archived")
-    search_fields = ("title", "slug")
-    autocomplete_fields = ("parent",)
+    list_display = ("pk", "name", "parent", "is_active", "is_featured", "sort_index", "archived")
+    list_display_links = ("pk", "name")
+    search_fields = ("name", "slug")
+    list_filter = ("archived", "is_active", "is_featured", "parent")
+    prepopulated_fields = {"slug": ("name",)}
+    actions = (archive_categories, restore_categories)
+
+    fieldsets = (
+        (None, {"fields": ("name", "slug", "parent", "icon")}),
+        ("Отображение", {"fields": ("is_active", "is_featured", "sort_index", "archived")}),
+    )
+
+
+@admin.register(Manufacturer)
+class ManufacturerAdmin(SoftDeleteAdminMixin, admin.ModelAdmin):
+    list_display = ("pk", "name", "slug", "archived")
+    list_display_links = ("pk", "name")
+    search_fields = ("name", "slug", "description")
+    list_filter = ("archived",)
+    prepopulated_fields = {"slug": ("name",)}
+    actions = (archive_manufacturers, restore_manufacturers)
+
+
+class ProductOrderInline(admin.TabularInline):
+    model = Order.products.through
+    fk_name = "product"
+    extra = 0
+    can_delete = False
+    verbose_name = "Заказ"
+    verbose_name_plural = "Заказы с этим товаром"
+    fields = ("order_link", "created_at", "status", "user")
+    readonly_fields = ("order_link", "created_at", "status", "user")
+
+    @admin.display(description="Заказ")
+    def order_link(self, obj):
+        url = reverse("admin:shopapp_order_change", args=(obj.order_id,))
+        return format_html('<a href="{}">Заказ #{}</a>', url, obj.order_id)
+
+    @admin.display(description="Создан")
+    def created_at(self, obj):
+        return obj.order.created_at
+
+    @admin.display(description="Статус")
+    def status(self, obj):
+        return obj.order.status
+
+    @admin.display(description="Пользователь")
+    def user(self, obj):
+        return obj.order.user
+
+    def has_add_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(Product)
@@ -64,33 +131,41 @@ class ProductAdmin(SoftDeleteAdminMixin, admin.ModelAdmin):
         "name",
         "category",
         "manufacturer",
+        "image_preview",
         "price",
         "discount",
         "final_price_display",
-        "limited_edition",
-        "in_stock",
+        "sort_index",
+        "is_featured",
+        "is_limited_edition",
         "archived",
     )
-    list_filter = ("archived", "limited_edition", "in_stock", "category")
-    search_fields = ("name", "description", "short_description", "manufacturer")
+    list_display_links = ("pk", "name")
+    search_fields = ("name", "short_description", "description", "category__name", "manufacturer__name")
+    list_filter = ("archived", "is_featured", "is_limited_edition", "category", "manufacturer", "created_at")
+    actions = (archive_products, restore_products)
+    inlines = (ProductOrderInline,)
     readonly_fields = ("image_preview",)
-    autocomplete_fields = ("category", "created_by")
-    inlines = (ReviewInline,)
+    autocomplete_fields = ("category", "manufacturer", "created_by")
 
     fieldsets = (
-        (None, {"fields": ("category", "name", "short_description", "description", "manufacturer")}),
-        ("Media", {"fields": ("image", "image_preview")}),
-        ("Pricing", {"fields": ("price", "discount", "sort_index")}),
-        ("State", {"fields": ("limited_edition", "in_stock", "archived", "created_by")}),
+        (None, {"fields": ("name", "short_description", "description", "image", "image_preview", "archived")}),
+        ("Каталог", {"fields": ("category", "manufacturer", "sort_index", "is_featured", "is_limited_edition")}),
+        ("Цена", {"fields": ("price", "discount")}),
+        ("Служебные данные", {"fields": ("created_by",)}),
     )
 
-    @admin.display(description="Preview")
+    @admin.display(description="Превью")
     def image_preview(self, obj):
         if not obj.image:
-            return "—"
-        return format_html('<img src="{}" style="max-height:80px;border-radius:8px;" alt="{}"/>', obj.image.url, obj.name)
+            return "Нет изображения"
+        return format_html(
+            '<img src="{}" alt="{}" style="max-height: 80px; border-radius: 8px;" />',
+            obj.image.url,
+            obj.name,
+        )
 
-    @admin.display(description="Final price")
+    @admin.display(description="Цена со скидкой")
     def final_price_display(self, obj):
         return obj.final_price
 
@@ -98,33 +173,26 @@ class ProductAdmin(SoftDeleteAdminMixin, admin.ModelAdmin):
 @admin.register(Order)
 class OrderAdmin(SoftDeleteAdminMixin, admin.ModelAdmin):
     change_list_template = "shopapp/orders_changelist.html"
-    list_display = (
-        "pk",
-        "full_name",
-        "status",
-        "payment_type",
-        "delivery_type",
-        "grand_total_display",
-        "user",
-        "created_at",
-        "archived",
-    )
-    list_filter = ("archived", "status", "payment_type", "delivery_type", "created_at")
-    search_fields = ("full_name", "email", "phone", "city", "address", "user__username")
-    autocomplete_fields = ("user", "products")
-    inlines = (OrderItemInline,)
+    list_display = ("pk", "delivery_address_short", "status", "user", "created_at", "products_count", "total_price_display", "archived")
+    list_display_links = ("pk",)
+    search_fields = ("delivery_address", "status", "user__username")
+    list_filter = ("archived", "status", "created_at")
+    actions = (archive_orders, restore_orders)
 
-    fieldsets = (
-        ("Client", {"fields": ("user", "full_name", "email", "phone")}),
-        ("Delivery", {"fields": ("city", "address", "delivery_type", "delivery_address")}),
-        ("Payment", {"fields": ("payment_type", "payment_number", "payment_error")}),
-        ("State", {"fields": ("status", "promo_code", "comment", "archived")}),
-        ("Products", {"fields": ("products",)}),
-    )
+    @admin.display(description="Адрес")
+    def delivery_address_short(self, obj):
+        max_length = 48
+        if len(obj.delivery_address) <= max_length:
+            return obj.delivery_address
+        return f"{obj.delivery_address[:max_length]}..."
 
-    @admin.display(description="Grand total")
-    def grand_total_display(self, obj):
-        return obj.grand_total
+    @admin.display(description="Кол-во товаров")
+    def products_count(self, obj):
+        return obj.products.count()
+
+    @admin.display(description="Сумма")
+    def total_price_display(self, obj):
+        return obj.total_price
 
     def get_urls(self):
         urls = super().get_urls()
@@ -146,7 +214,11 @@ class OrderAdmin(SoftDeleteAdminMixin, admin.ModelAdmin):
                 except ValueError as error:
                     self.message_user(request, str(error), level=messages.ERROR)
                 else:
-                    self.message_user(request, f"Import completed. Orders created: {created_orders}.", level=messages.SUCCESS)
+                    self.message_user(
+                        request,
+                        f"Импорт завершён. Создано заказов: {created_orders}.",
+                        level=messages.SUCCESS,
+                    )
                     return redirect("admin:shopapp_order_changelist")
         else:
             form = OrderImportForm()
@@ -155,8 +227,8 @@ class OrderAdmin(SoftDeleteAdminMixin, admin.ModelAdmin):
             **self.admin_site.each_context(request),
             "opts": self.model._meta,
             "form": form,
-            "title": "Import orders from CSV",
-            "subtitle": "Upload",
+            "title": "Импорт заказов из CSV",
+            "subtitle": "Загрузка файла",
         }
         return render(request, "admin/csv_form.html", context)
 
@@ -164,17 +236,18 @@ class OrderAdmin(SoftDeleteAdminMixin, admin.ModelAdmin):
         try:
             decoded_file = uploaded_file.read().decode("utf-8-sig")
         except UnicodeDecodeError as error:
-            raise ValueError("Cannot read file. Use UTF-8 CSV.") from error
+            raise ValueError("Не удалось прочитать файл. Используйте CSV в кодировке UTF-8.") from error
 
         reader = csv.DictReader(StringIO(decoded_file))
         if not reader.fieldnames:
-            raise ValueError("CSV is empty or contains no headers.")
+            raise ValueError("CSV-файл пустой или не содержит заголовков.")
 
         fieldnames = {field.strip() for field in reader.fieldnames if field}
         required_fields = {"delivery_address", "product_ids"}
         missing_fields = required_fields - fieldnames
         if missing_fields:
-            raise ValueError(f"Missing required columns: {', '.join(sorted(missing_fields))}.")
+            missing_fields_display = ", ".join(sorted(missing_fields))
+            raise ValueError(f"В CSV отсутствуют обязательные колонки: {missing_fields_display}.")
 
         user_model = get_user_model()
         created_orders = 0
@@ -183,13 +256,13 @@ class OrderAdmin(SoftDeleteAdminMixin, admin.ModelAdmin):
             for row_index, row in enumerate(reader, start=2):
                 row = {(key or "").strip(): value for key, value in row.items()}
                 delivery_address = (row.get("delivery_address") or "").strip()
-                if len(delivery_address) < 5:
-                    raise ValueError(f"Row {row_index}: delivery address must be longer.")
+                if len(delivery_address) < 10:
+                    raise ValueError(f"Строка {row_index}: адрес доставки должен быть не короче 10 символов.")
 
                 product_ids = self._parse_product_ids(row.get("product_ids", ""), row_index)
                 products = list(Product.objects.filter(pk__in=product_ids, archived=False).order_by("pk"))
                 if len(products) != len(set(product_ids)):
-                    raise ValueError(f"Row {row_index}: one or more products were not found or archived.")
+                    raise ValueError(f"Строка {row_index}: один или несколько товаров не найдены или находятся в архиве.")
 
                 user = None
                 user_id_raw = (row.get("user_id") or "").strip()
@@ -197,58 +270,26 @@ class OrderAdmin(SoftDeleteAdminMixin, admin.ModelAdmin):
                     try:
                         user = user_model.objects.get(pk=int(user_id_raw))
                     except (ValueError, user_model.DoesNotExist) as error:
-                        raise ValueError(f"Row {row_index}: user id={user_id_raw} was not found.") from error
+                        raise ValueError(f"Строка {row_index}: пользователь с id={user_id_raw} не найден.") from error
 
                 order = Order.objects.create(
-                    user=user,
                     delivery_address=delivery_address,
-                    address=delivery_address,
-                    city=(row.get("city") or "").strip(),
-                    full_name=(row.get("full_name") or "").strip(),
-                    email=(row.get("email") or "").strip(),
-                    phone=(row.get("phone") or "").strip(),
                     promo_code=(row.get("promo_code") or "").strip(),
-                    status=(row.get("status") or Order.STATUS_NEW).strip() or Order.STATUS_NEW,
+                    status=(row.get("status") or Order._meta.get_field("status").default).strip() or Order._meta.get_field("status").default,
+                    user=user,
                 )
-                for product in products:
-                    order.products.add(product)
-                    OrderItem.objects.create(
-                        order=order,
-                        product=product,
-                        quantity=1,
-                        price_snapshot=product.final_price,
-                    )
+                order.products.set(products)
                 created_orders += 1
+
         return created_orders
 
-    def _parse_product_ids(self, raw_value, row_index: int):
-        chunks = [chunk.strip() for chunk in (raw_value or "").split(",") if chunk.strip()]
-        if not chunks:
-            raise ValueError(f"Row {row_index}: product_ids must contain at least one id.")
+    def _parse_product_ids(self, raw_value: str, row_index: int) -> list[int]:
+        normalized_value = raw_value.replace("|", ",")
+        parts = [part.strip() for part in normalized_value.split(",") if part.strip()]
+        if not parts:
+            raise ValueError(f"Строка {row_index}: укажите хотя бы один product_id.")
+
         try:
-            return [int(chunk) for chunk in chunks]
+            return [int(part) for part in parts]
         except ValueError as error:
-            raise ValueError(f"Row {row_index}: product_ids must contain only integers.") from error
-
-
-@admin.register(Review)
-class ReviewAdmin(admin.ModelAdmin):
-    list_display = ("pk", "product", "author", "rate", "created_at", "is_active")
-    list_filter = ("is_active", "rate", "created_at")
-    search_fields = ("author", "email", "text", "product__name")
-    autocomplete_fields = ("product", "user")
-
-
-@admin.register(ShopSettings)
-class ShopSettingsAdmin(admin.ModelAdmin):
-    list_display = ("pk", "free_delivery_threshold", "delivery_cost", "express_delivery_cost")
-
-    def has_add_permission(self, request):
-        if ShopSettings.objects.exists():
-            return False
-        return super().has_add_permission(request)
-
-
-admin.site.site_header = "Megano administration"
-admin.site.site_title = "Megano admin"
-admin.site.index_title = "Store management"
+            raise ValueError(f"Строка {row_index}: product_ids должны содержать только числовые идентификаторы.") from error

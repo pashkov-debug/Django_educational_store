@@ -1,0 +1,199 @@
+{% extends "shopapp/storefront/base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="Middle Middle_top">
+    <div class="Middle-top">
+        <div class="wrap">
+            <div class="Middle-header">
+                <h1 class="Middle-title">{{ page_title }}</h1>
+                <ul class="breadcrumbs Middle-breadcrumbs">
+                    <li class="breadcrumbs-item"><a href="{% url 'shopapp:index' %}">Главная</a></li>
+                    <li class="breadcrumbs-item breadcrumbs-item_current"><span>{{ page_title }}</span></li>
+                </ul>
+                <p>{{ page_subtitle }}</p>
+                {% if selected_category %}
+                    <p><strong>Выбранная категория:</strong> {{ selected_category.name }}</p>
+                {% endif %}
+                {% if perms.shopapp.add_product %}
+                    <div class="buttons">
+                        <a class="btn btn_primary" href="{% url 'shopapp:product_create' %}">Добавить товар</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="Section">
+        <div class="wrap">
+            <form class="form" method="get" action="{% url 'shopapp:products_list' %}" style="margin-bottom: 28px;">
+                <div class="row" style="align-items: flex-end; gap: 16px; flex-wrap: wrap;">
+                    <div class="row-block">
+                        <label>Название</label>
+                        <input class="form-input" type="text" name="q" value="{{ request.GET.q }}" placeholder="Название товара">
+                    </div>
+
+                    <div class="row-block">
+                        <label>Категория</label>
+                        <select class="form-select" name="category">
+                            <option value="">Все категории</option>
+                            {% for category in categories %}
+                                <option value="{{ category.slug }}"{% if selected_category_value == category.slug %} selected{% endif %}>
+                                    {{ category.name }}
+                                </option>
+                                {% for child in category.active_menu_children %}
+                                    <option value="{{ child.slug }}"{% if selected_category_value == child.slug %} selected{% endif %}>
+                                        — {{ child.name }}
+                                    </option>
+                                {% endfor %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="row-block">
+                        <label>Производитель</label>
+                        <select class="form-select" name="manufacturer">
+                            <option value="">Любой производитель</option>
+                            {% for manufacturer in manufacturers %}
+                                <option value="{{ manufacturer.pk }}"{% if request.GET.manufacturer == manufacturer.pk|stringformat:"s" %} selected{% endif %}>
+                                    {{ manufacturer.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="row-block">
+                        <label>Цена от</label>
+                        <input class="form-input" type="number" name="price_min" value="{{ request.GET.price_min }}" min="0" step="0.01">
+                    </div>
+
+                    <div class="row-block">
+                        <label>Цена до</label>
+                        <input class="form-input" type="number" name="price_max" value="{{ request.GET.price_max }}" min="0" step="0.01">
+                    </div>
+
+                    <div class="row-block">
+                        <label>Сортировка</label>
+                        <select class="form-select" name="sort">
+                            {% for sort_key, sort_label in sort_options %}
+                                <option value="{{ sort_key }}"{% if selected_sort == sort_key %} selected{% endif %}>
+                                    {{ sort_label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="row-block">
+                        <label>Направление</label>
+                        <select class="form-select" name="direction">
+                            <option value="asc"{% if selected_direction == "asc" %} selected{% endif %}>по возрастанию</option>
+                            <option value="desc"{% if selected_direction == "desc" %} selected{% endif %}>по убыванию</option>
+                        </select>
+                    </div>
+
+                    <div class="row-block">
+                        <button class="btn btn_primary" type="submit">Применить</button>
+                        <a class="btn btn_default" href="{% url 'shopapp:products_list' %}">Сбросить</a>
+                    </div>
+                </div>
+
+                {% if filter_form.errors %}
+                    <div style="margin-top: 16px; padding: 14px 18px; border: 1px solid #d66; background: #fff6f6;">
+                        {{ filter_form.errors }}
+                    </div>
+                {% endif %}
+            </form>
+
+            <div class="Sort" style="margin-bottom: 24px;">
+                <div class="Sort-title">Быстрая сортировка:</div>
+                <div class="Sort-variants">
+                    <a class="Sort-sortBy" href="?{{ query_without_page }}sort=popular&direction=desc">по популярности</a>
+                    <a class="Sort-sortBy" href="?{{ query_without_page }}sort=price&direction=asc">по цене ↑</a>
+                    <a class="Sort-sortBy" href="?{{ query_without_page }}sort=price&direction=desc">по цене ↓</a>
+                    <a class="Sort-sortBy" href="?{{ query_without_page }}sort=new&direction=desc">по новизне</a>
+                </div>
+            </div>
+
+            <div class="Cards">
+                {% for product in catalog_items %}
+                    <div class="Card">
+                        <a class="Card-picture" href="{% url 'shopapp:product_detail' product.pk %}">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <div style="padding: 24px; text-align: center;">Изображение товара не загружено.</div>
+                            {% endif %}
+                        </a>
+                        <div class="Card-content">
+                            <strong class="Card-title">
+                                <a href="{% url 'shopapp:product_detail' product.pk %}">{{ product.name }}</a>
+                            </strong>
+                            <div class="Card-description">
+                                <p>{{ product.display_description|truncatechars:120 }}</p>
+
+                                {% if product.category %}
+                                    <p>Категория: <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a></p>
+                                {% endif %}
+
+                                {% if product.manufacturer %}
+                                    <p>Производитель: {{ product.manufacturer.name }}</p>
+                                {% endif %}
+
+                                <div class="Card-cost">
+                                    {% if product.has_discount %}
+                                        <span class="Card-price">₽{{ product.final_price }}</span>
+                                        <span class="Card-oldPrice">₽{{ product.price }}</span>
+                                    {% else %}
+                                        <span class="Card-price">₽{{ product.price }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <p>Покупок: {{ product.orders_count }}</p>
+                                <p>Отзывов: {{ product.reviews_count }}</p>
+
+                                <div class="buttons" style="margin-top: 12px;">
+                                    <a class="btn btn_default" href="{% url 'shopapp:product_detail' product.pk %}">Открыть</a>
+
+                                    <form action="{% url 'shopapp:cart_add' product.pk %}" method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="quantity" value="1">
+                                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                        <button class="btn btn_primary" type="submit">Купить</button>
+                                    </form>
+
+                                    {% if user.is_superuser or perms.shopapp.change_product and user == product.created_by %}
+                                        <a class="btn btn_default" href="{% url 'shopapp:product_update' product.pk %}">Изменить</a>
+                                        <a class="btn btn_default" href="{% url 'shopapp:product_archive' product.pk %}">Архивировать</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="Card Card_main">
+                        <div class="Card-content">
+                            <strong class="Card-title">Товары не найдены</strong>
+                            <div class="Card-description">Измените параметры фильтра или добавьте товары через админку.</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            {% if is_paginated %}
+                <div class="Pagination" style="margin-top: 28px;">
+                    {% if page_obj.has_previous %}
+                        <a class="btn btn_default" href="?{{ query_without_page }}page={{ page_obj.previous_page_number }}">Назад</a>
+                    {% endif %}
+
+                    <span style="margin: 0 12px;">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+
+                    {% if page_obj.has_next %}
+                        <a class="btn btn_default" href="?{{ query_without_page }}page={{ page_obj.next_page_number }}">Вперёд</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

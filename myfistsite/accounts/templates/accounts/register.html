@@ -1,15 +1,16 @@
-{% extends "frontend/base.html" %}
+{% extends "shopapp/storefront/base.html" %}
+{% load i18n %}
 
-{% block title %}Регистрация{% endblock %}
+{% block title %}{% trans "Регистрация" %}{% endblock %}
 
 {% block content %}
 <div class="Section">
     <div class="wrap">
         <div class="Section-content">
             <header class="Section-header">
-                <h1 class="Section-title">Регистрация</h1>
+                <h1 class="Section-title">{% trans "Регистрация" %}</h1>
                 <div class="Section-description">
-                    После регистрации автоматически создаётся профиль пользователя.
+                    {% trans "После регистрации автоматически создаётся профиль пользователя." %}
                 </div>
             </header>
 
@@ -59,8 +60,8 @@
                         </div>
 
                         <div class="buttons" style="display: flex; gap: 12px; flex-wrap: wrap;">
-                            <button class="btn btn_primary" type="submit">Создать аккаунт</button>
-                            <a class="btn btn_default" href="{% url 'accounts:login' %}">Уже есть аккаунт</a>
+                            <button class="btn btn_primary" type="submit">{% trans "Создать аккаунт" %}</button>
+                            <a class="btn btn_default" href="{% url 'accounts:login' %}">{% trans "Уже есть аккаунт" %}</a>
                         </div>
                     </form>
                 </div>

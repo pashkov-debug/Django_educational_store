@@ -1,0 +1,98 @@
+{% extends "shopapp/storefront/base.html" %}
+
+{% block title %}Оформление заказа — оплата{% endblock %}
+
+{% block content %}
+<div class="Middle Middle_top">
+    <div class="Middle-top">
+        <div class="wrap">
+            <div class="Middle-header">
+                <h1 class="Middle-title">Оформление заказа</h1>
+                <ul class="breadcrumbs Middle-breadcrumbs">
+                    <li class="breadcrumbs-item">
+                        <a href="{% url 'shopapp:index' %}">Главная</a>
+                    </li>
+                    <li class="breadcrumbs-item">
+                        <a href="{% url 'shopapp:checkout_delivery' %}">Доставка</a>
+                    </li>
+                    <li class="breadcrumbs-item breadcrumbs-item_current">
+                        <span>Оплата</span>
+                    </li>
+                </ul>
+                <p>Шаг {{ checkout_step }} из 4 — способ оплаты.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="Section">
+        <div class="wrap">
+            {% if form.errors %}
+                <div style="margin-bottom: 24px; padding: 16px 20px; border: 1px solid #d66; background: #fff6f6;">
+                    <strong>Выберите способ оплаты:</strong>
+                    <ul style="margin-top: 10px;">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li>{{ field.label }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <form method="post" novalidate style="display: block;">
+                {% csrf_token %}
+
+                {% with selected_payment=form.payment_type.value|default:"card" %}
+                    <div style="display: grid; grid-template-columns: minmax(260px, 620px); gap: 18px; margin-bottom: 32px;">
+                        <div>
+                            <div style="display: block; margin-bottom: 12px; font-weight: 700;">
+                                Способ оплаты
+                            </div>
+
+                            <label style="display: flex; gap: 10px; align-items: flex-start; margin-bottom: 14px;">
+                                <input
+                                    type="radio"
+                                    name="payment_type"
+                                    value="card"
+                                    {% if selected_payment == "card" %}checked{% endif %}
+                                    required
+                                >
+                                <span>
+                                    <strong>Онлайн картой</strong><br>
+                                    На следующем шаге нужно будет ввести номер карты.
+                                </span>
+                            </label>
+
+                            <label style="display: flex; gap: 10px; align-items: flex-start; margin-bottom: 14px;">
+                                <input
+                                    type="radio"
+                                    name="payment_type"
+                                    value="random_account"
+                                    {% if selected_payment == "random_account" %}checked{% endif %}
+                                    required
+                                >
+                                <span>
+                                    <strong>Онлайн со случайного чужого счёта</strong><br>
+                                    На странице оплаты можно будет сгенерировать случайный счёт.
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                {% endwith %}
+
+                <div class="buttons" style="margin-top: 24px;">
+                    <a class="btn btn_default" href="{% url 'shopapp:checkout_delivery' %}">
+                        Назад
+                    </a>
+                    <button class="btn btn_primary" type="submit">
+                        Дальше
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

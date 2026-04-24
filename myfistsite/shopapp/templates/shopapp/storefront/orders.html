@@ -1,0 +1,74 @@
+{% extends "shopapp/storefront/base.html" %}
+
+{% block title %}Заказы{% endblock %}
+
+{% block content %}
+<div class="Middle Middle_top">
+    <div class="Middle-top">
+        <div class="wrap">
+            <div class="Middle-header">
+                <h1 class="Middle-title">Заказы</h1>
+                <ul class="breadcrumbs Middle-breadcrumbs">
+                    <li class="breadcrumbs-item"><a href="{% url 'shopapp:index' %}">Главная</a></li>
+                    <li class="breadcrumbs-item breadcrumbs-item_current"><span>Заказы</span></li>
+                </ul>
+                <p>Список заказов с пользователем и полным набором связанных товаров.</p>
+                <div class="buttons">
+                    <a class="btn btn_primary" href="{% url 'shopapp:order_create' %}">Создать заказ</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="Section">
+        <div class="wrap">
+            <div class="Orders">
+                {% for order in orders %}
+                    <div class="Order Order_anons">
+                        <div class="Order-personal">
+                            <div class="row">
+                                <div class="row-block">
+                                    <a class="Order-title" href="{% url 'shopapp:order_detail' order.pk %}">
+                                        Заказ №{{ order.pk }} от {{ order.created_at|date:"d.m.Y H:i" }}
+                                    </a>
+                                    <div class="Account-editLink">{{ order.delivery_address }}</div>
+                                </div>
+                                <div class="row-block">
+                                    <div class="Order-info">
+                                        <div class="Order-infoType">Пользователь:</div>
+                                        <div class="Order-infoContent">{% if order.user %}{{ order.user.username }}{% else %}не назначен{% endif %}</div>
+                                    </div>
+                                    <div class="Order-info">
+                                        <div class="Order-infoType">Товары:</div>
+                                        <div class="Order-infoContent">
+                                            {% for product in order.products.all %}
+                                                <a href="{% url 'shopapp:product_detail' product.pk %}">{{ product.name }}</a>{% if not forloop.last %}, {% endif %}
+                                            {% empty %}
+                                                нет товаров
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="Order-info">
+                                        <div class="Order-infoType">Сумма:</div>
+                                        <div class="Order-infoContent">${{ order.total_price }}</div>
+                                    </div>
+                                    <div class="Order-info">
+                                        <div class="Order-infoType">Статус:</div>
+                                        <div class="Order-infoContent">{{ order.status }}</div>
+                                    </div>
+                                    <div class="buttons" style="margin-top: 12px;">
+                                        <a class="btn btn_default" href="{% url 'shopapp:order_detail' order.pk %}">Открыть</a>
+                                        <a class="btn btn_default" href="{% url 'shopapp:order_update' order.pk %}">Изменить</a>
+                                        <a class="btn btn_default" href="{% url 'shopapp:order_delete' order.pk %}">Удалить</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>Заказы отсутствуют.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
