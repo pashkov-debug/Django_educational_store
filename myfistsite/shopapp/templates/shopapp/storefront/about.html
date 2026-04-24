@@ -1,0 +1,116 @@
+{% extends "shopapp/storefront/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "О магазине" %}{% endblock %}
+
+{% block content %}
+<div class="Middle Middle_top">
+    <div class="Middle-top">
+        <div class="wrap">
+            <div class="Middle-header">
+                <h1 class="Middle-title">{% trans "О магазине" %}</h1>
+                <ul class="breadcrumbs Middle-breadcrumbs">
+                    <li class="breadcrumbs-item">
+                        <a href="{% url 'shopapp:index' %}">{% trans "Главная" %}</a>
+                    </li>
+                    <li class="breadcrumbs-item breadcrumbs-item_current">
+                        <span>{% trans "О магазине" %}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="Section Section_column Section_columnLeft Section_columnWide">
+        <div class="wrap">
+            <div class="Section-column">
+                <div class="Section-columnSection Section-columnSection_mark">
+                    <div class="media media_advantage">
+                        <div class="media-content">
+                            <strong class="media-title">{% trans "Доставка и возврат" %}</strong>
+                            <p class="media-text">{% trans "Доставляем заказы и сохраняем историю покупок в личном кабинете." %}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="Section-columnSection Section-columnSection_mark">
+                    <div class="media media_advantage">
+                        <div class="media-content">
+                            <strong class="media-title">{% trans "Безопасная оплата" %}</strong>
+                            <p class="media-text">{% trans "Платежи проходят через очередь и отображаются на странице статуса оплаты." %}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="Section-columnSection Section-columnSection_mark">
+                    <div class="media media_advantage">
+                        <div class="media-content">
+                            <strong class="media-title">{% trans "Поддержка" %}</strong>
+                            <p class="media-text">{% trans "Статусы заказов, платежей и состав заказа доступны пользователю после оформления." %}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="Section-columnSection Section-columnSection_mark">
+                    <div class="media media_advantage">
+                        <div class="media-content">
+                            <strong class="media-title">{% trans "Контроль качества" %}</strong>
+                            <p class="media-text">{% trans "Товары проходят через каталог, корзину, оформление заказа и историю покупок." %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="Section-content">
+                <article class="Article">
+                    <div class="Article-section">
+                        <div class="row row_verticalCenter row_maxHalf">
+                            <div class="row-block">
+                                <h2>{% trans "Почему выбирают наш магазин" %}</h2>
+                                <p>
+                                    {% trans "Это учебный интернет-магазин на Django. В нём реализованы каталог товаров, категории, производители, корзина, оформление заказа, очередь платежей, история заказов и личный кабинет." %}
+                                </p>
+                                <p>
+                                    {% trans "Проект подготовлен для запуска локально, через Docker Compose и на виртуальной машине. Для наблюдаемости подключены Loki, Promtail и Grafana." %}
+                                </p>
+                                <p>
+                                    {% trans "Перевод товарного контента не входит в текущие требования и оставлен как точка расширения." %}
+                                </p>
+                                <div class="buttons">
+                                    <a class="btn btn_primary" href="{% url 'shopapp:products_list' %}">{% trans "Перейти в каталог" %}</a>
+                                    <a class="btn btn_default" href="{% url 'shopapp:layout_sale' %}">{% trans "Посмотреть скидки" %}</a>
+                                </div>
+                            </div>
+
+                            <div class="row-block">
+                                <div class="Card Card_main">
+                                    <div class="Card-content">
+                                        <strong class="Card-title">{% trans "Что уже работает" %}</strong>
+                                        <div class="Card-description">
+                                            <p>{% trans "Каталог с фильтрами и сортировкой." %}</p>
+                                            <p>{% trans "Корзина для гостя и авторизованного пользователя." %}</p>
+                                            <p>{% trans "Пошаговое оформление заказа." %}</p>
+                                            <p>{% trans "Фоновая обработка платежей." %}</p>
+                                            <p>{% trans "Личный кабинет и история заказов." %}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="Article-section">
+                        <h2>{% trans "Как устроен заказ" %}</h2>
+                        <p>
+                            {% trans "Пользователь добавляет товары в корзину, проходит шаги оформления, выбирает доставку и оплату. После подтверждения создаются заказ и позиции заказа, а платёж попадает в очередь обработки." %}
+                        </p>
+                        <p>
+                            {% trans "Результат оплаты можно проверить на странице статуса. Если платёж завершился ошибкой, оплату можно повторить из истории заказов или со страницы заказа." %}
+                        </p>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

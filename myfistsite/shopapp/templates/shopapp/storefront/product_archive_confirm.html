@@ -1,0 +1,40 @@
+{% extends "shopapp/storefront/base.html" %}
+
+{% block title %}Архивация товара{% endblock %}
+
+{% block content %}
+<div class="Middle Middle_top">
+    <div class="Middle-top">
+        <div class="wrap">
+            <div class="Middle-header">
+                <h1 class="Middle-title">Архивация товара</h1>
+                <ul class="breadcrumbs Middle-breadcrumbs">
+                    <li class="breadcrumbs-item"><a href="{% url 'shopapp:index' %}">Главная</a></li>
+                    <li class="breadcrumbs-item"><a href="{% url 'shopapp:products_list' %}">Товары</a></li>
+                    <li class="breadcrumbs-item"><a href="{% url 'shopapp:product_detail' product.pk %}">{{ product.name }}</a></li>
+                    <li class="breadcrumbs-item breadcrumbs-item_current"><span>Архивировать</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="Section">
+        <div class="wrap">
+            <div class="Card Card_main">
+                <div class="Card-content">
+                    <strong class="Card-title">Архивировать товар «{{ product.name }}»?</strong>
+                    <div class="Card-description">
+                        <p>После подтверждения товар исчезнет из списка активных товаров, но запись сохранится в базе данных.</p>
+                    </div>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="buttons">
+                            <button class="btn btn_primary" type="submit">Да, архивировать</button>
+                            <a class="btn btn_default" href="{% url 'shopapp:product_detail' product.pk %}">Отмена</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

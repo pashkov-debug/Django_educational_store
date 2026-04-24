@@ -1,0 +1,81 @@
+{% extends "shopapp/storefront/base.html" %}
+
+{% block title %}Статус оплаты{% endblock %}
+
+{% block content %}
+<div class="Middle Middle_top">
+    <div class="Middle-top">
+        <div class="wrap">
+            <div class="Middle-header">
+                <h1 class="Middle-title">Статус оплаты</h1>
+                <ul class="breadcrumbs Middle-breadcrumbs">
+                    <li class="breadcrumbs-item"><a href="{% url 'shopapp:index' %}">Главная</a></li>
+                    <li class="breadcrumbs-item"><a href="{% url 'shopapp:layout_payment' %}">Оплата</a></li>
+                    <li class="breadcrumbs-item breadcrumbs-item_current"><span>Статус оплаты</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="Section">
+        <div class="wrap">
+            <div class="Order-block" style="margin-bottom: 32px;">
+                <h2>Платёж №{{ payment.pk }}</h2>
+                <p><strong>Заказ:</strong> №{{ order.pk }}</p>
+                <p><strong>Сумма:</strong> ₽{{ payment.amount }}</p>
+                <p><strong>Счёт:</strong> {{ payment.account_number }}</p>
+                <p><strong>Статус платежа:</strong> {{ payment.status_label }}</p>
+                <p><strong>Статус заказа:</strong> {{ order.payment_status_label }}</p>
+
+                {% if payment.error_message %}
+                    <p style="color: #c00;">
+                        <strong>Ошибка:</strong> {{ payment.error_message }}
+                    </p>
+                {% endif %}
+            </div>
+
+            <div class="Cart" style="margin-bottom: 32px;">
+                {% for item in order_items %}
+                    <div class="Cart-product">
+                        <div class="Cart-block Cart-block_row">
+                            <div class="Cart-block Cart-block_info">
+                                <a class="Cart-title" href="{% url 'shopapp:product_detail' item.product.pk %}">
+                                    {{ item.product_name_snapshot }}
+                                </a>
+                                <div class="Cart-desc">{{ item.quantity }} × ₽{{ item.unit_price }}</div>
+                            </div>
+                            <div class="Cart-block Cart-block_summ">
+                                <strong>Сумма:</strong> ₽{{ item.total_price }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="buttons">
+                {% if payment.status == "pending" %}
+                    <a class="btn btn_default" href="{% url 'shopapp:layout_progress_payment' %}">Обновить статус</a>
+                    <a class="btn btn_primary" href="{% url 'shopapp:orders_list' %}">К заказам</a>
+                {% elif payment.status == "paid" %}
+                    <a class="btn btn_primary" href="{% url 'shopapp:order_detail' order.pk %}">Открыть заказ</a>
+                {% elif payment.status == "failed" %}
+                    <form action="{% url 'shopapp:payment_retry' order.pk %}" method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <button class="btn btn_primary" type="submit">Повторить оплату</button>
+                    </form>
+                    <a class="btn btn_default" href="{% url 'shopapp:orders_list' %}">К заказам</a>
+                {% endif %}
+            </div>
+
+            {% if payment.status == "pending" %}
+                <div style="margin-top: 24px;">
+                    <p>
+                        Для локальной обработки выполните команду:
+                    </p>
+                    <pre>python manage.py process_payments</pre>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "shopapp/storefront/base.html" %}
+
+{% block title %}Оплата чужим счётом{% endblock %}
+
+{% block content %}
+<div class="Middle Middle_top">
+    <div class="Middle-top">
+        <div class="wrap">
+            <div class="Middle-header">
+                <h1 class="Middle-title">Оплата чужим счётом</h1>
+                <ul class="breadcrumbs Middle-breadcrumbs">
+                    <li class="breadcrumbs-item"><a href="{% url 'shopapp:index' %}">Главная</a></li>
+                    <li class="breadcrumbs-item"><a href="{% url 'shopapp:layout_payment' %}">Оплата</a></li>
+                    <li class="breadcrumbs-item breadcrumbs-item_current"><span>Чужой счёт</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="Section">
+        <div class="wrap">
+            <div class="Order-block">
+                <h2>Заказ №{{ order.pk }}</h2>
+                <p><strong>Итого к оплате:</strong> ₽{{ order.total_price }}</p>
+                <p>
+                    При подтверждении будет сгенерирован случайный 8-значный номер счёта.
+                    После этого платёж перейдёт в очередь обработки.
+                </p>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="buttons">
+                    <a class="btn btn_default" href="{% url 'shopapp:layout_payment' %}">Назад</a>
+                    <button class="btn btn_primary" type="submit">Сгенерировать счёт и оплатить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

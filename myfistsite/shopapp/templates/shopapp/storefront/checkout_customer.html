@@ -1,0 +1,136 @@
+{% extends "shopapp/storefront/base.html" %}
+
+{% block title %}Оформление заказа — данные покупателя{% endblock %}
+
+{% block content %}
+<div class="Middle Middle_top">
+    <div class="Middle-top">
+        <div class="wrap">
+            <div class="Middle-header">
+                <h1 class="Middle-title">Оформление заказа</h1>
+                <ul class="breadcrumbs Middle-breadcrumbs">
+                    <li class="breadcrumbs-item"><a href="{% url 'shopapp:index' %}">Главная</a></li>
+                    <li class="breadcrumbs-item"><a href="{% url 'shopapp:layout_cart' %}">Корзина</a></li>
+                    <li class="breadcrumbs-item breadcrumbs-item_current"><span>Данные покупателя</span></li>
+                </ul>
+                <p>Шаг {{ checkout_step }} из 4 — параметры пользователя.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="Section">
+        <div class="wrap">
+            {% if form.errors %}
+                <div style="margin-bottom: 24px; padding: 16px 20px; border: 1px solid #d66; background: #fff6f6;">
+                    <strong>Проверьте данные формы:</strong>
+                    <ul style="margin-top: 10px;">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li>{{ field.label }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <form method="post" novalidate style="display: block;">
+                {% csrf_token %}
+
+                <div style="display: grid; grid-template-columns: minmax(260px, 520px); gap: 18px; margin-bottom: 32px;">
+                    <div>
+                        <label for="{{ form.full_name.id_for_label }}" style="display: block; margin-bottom: 8px; font-weight: 700;">
+                            {{ form.full_name.label }}
+                        </label>
+                        <input
+                            id="{{ form.full_name.id_for_label }}"
+                            type="text"
+                            name="{{ form.full_name.html_name }}"
+                            value="{{ form.full_name.value|default_if_none:'' }}"
+                            placeholder="Иван Иванов"
+                            required
+                            style="display: block; width: 100%; height: 44px; padding: 8px 12px; border: 1px solid #999; background: #fff; color: #222;"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="{{ form.email.id_for_label }}" style="display: block; margin-bottom: 8px; font-weight: 700;">
+                            {{ form.email.label }}
+                        </label>
+                        <input
+                            id="{{ form.email.id_for_label }}"
+                            type="email"
+                            name="{{ form.email.html_name }}"
+                            value="{{ form.email.value|default_if_none:'' }}"
+                            placeholder="user@example.com"
+                            required
+                            style="display: block; width: 100%; height: 44px; padding: 8px 12px; border: 1px solid #999; background: #fff; color: #222;"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="{{ form.phone.id_for_label }}" style="display: block; margin-bottom: 8px; font-weight: 700;">
+                            {{ form.phone.label }}
+                        </label>
+                        <input
+                            id="{{ form.phone.id_for_label }}"
+                            type="tel"
+                            name="{{ form.phone.html_name }}"
+                            value="{{ form.phone.value|default_if_none:'' }}"
+                            placeholder="+7 900 000 00 00"
+                            required
+                            style="display: block; width: 100%; height: 44px; padding: 8px 12px; border: 1px solid #999; background: #fff; color: #222;"
+                        >
+                    </div>
+
+                    {% if not user.is_authenticated %}
+                        <div>
+                            <label for="{{ form.password.id_for_label }}" style="display: block; margin-bottom: 8px; font-weight: 700;">
+                                {{ form.password.label }}
+                            </label>
+                            <input
+                                id="{{ form.password.id_for_label }}"
+                                type="password"
+                                name="{{ form.password.html_name }}"
+                                placeholder="Необязательно"
+                                style="display: block; width: 100%; height: 44px; padding: 8px 12px; border: 1px solid #999; background: #fff; color: #222;"
+                            >
+                            <div style="margin-top: 6px;">Для гостя необязательно. Если заполнить — будет создан аккаунт.</div>
+                        </div>
+
+                        <div>
+                            <label for="{{ form.password_confirm.id_for_label }}" style="display: block; margin-bottom: 8px; font-weight: 700;">
+                                {{ form.password_confirm.label }}
+                            </label>
+                            <input
+                                id="{{ form.password_confirm.id_for_label }}"
+                                type="password"
+                                name="{{ form.password_confirm.html_name }}"
+                                placeholder="Повторите пароль"
+                                style="display: block; width: 100%; height: 44px; padding: 8px 12px; border: 1px solid #999; background: #fff; color: #222;"
+                            >
+                        </div>
+
+                        <p>
+                            Уже зарегистрированы?
+                            <a href="{% url 'accounts:login' %}?next={{ request.get_full_path }}">Войти</a>
+                        </p>
+                    {% endif %}
+                </div>
+
+                <div class="Cart-total" style="margin-top: 32px;">
+                    <div><strong>Товаров в корзине:</strong> {{ cart_total_quantity }}</div>
+                    <div><strong>Сумма товаров:</strong> ₽{{ cart_items_price }}</div>
+                </div>
+
+                <div class="buttons" style="margin-top: 24px;">
+                    <a class="btn btn_default" href="{% url 'shopapp:layout_cart' %}">Назад в корзину</a>
+                    <button class="btn btn_primary" type="submit">Дальше</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

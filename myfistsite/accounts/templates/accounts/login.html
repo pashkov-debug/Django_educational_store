@@ -1,15 +1,16 @@
-{% extends "frontend/base.html" %}
+{% extends "shopapp/storefront/base.html" %}
+{% load i18n %}
 
-{% block title %}Вход{% endblock %}
+{% block title %}{% trans "Вход" %}{% endblock %}
 
 {% block content %}
 <div class="Section">
     <div class="wrap">
         <div class="Section-content">
             <header class="Section-header">
-                <h1 class="Section-title">Вход в аккаунт</h1>
+                <h1 class="Section-title">{% trans "Вход в аккаунт" %}</h1>
                 <div class="Section-description">
-                    Авторизация выполняется через стандартные Django views в маршруте /accounts/.
+                    {% trans "Авторизация выполняется через стандартные Django views в маршруте /accounts/." %}
                 </div>
             </header>
 
@@ -43,8 +44,8 @@
                         </div>
 
                         <div class="buttons" style="display: flex; gap: 12px; flex-wrap: wrap;">
-                            <button class="btn btn_primary" type="submit">Войти</button>
-                            <a class="btn btn_default" href="{% url 'accounts:register' %}">Регистрация</a>
+                            <button class="btn btn_primary" type="submit">{% trans "Войти" %}</button>
+                            <a class="btn btn_default" href="{% url 'accounts:register' %}">{% trans "Регистрация" %}</a>
                         </div>
 
                         <input type="hidden" name="next" value="{{ next|default:'' }}">

@@ -1,0 +1,154 @@
+{% extends "shopapp/storefront/base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<div class="Middle">
+    <div class="Section">
+        <div class="wrap">
+            <header class="Section-header">
+                <h1 class="Section-title">Интернет-магазин</h1>
+                <p>Каталог товаров с категориями, производителями, фильтрами и подготовкой к корзине.</p>
+            </header>
+
+            <div class="Slider Slider_carousel">
+                <div class="Slider-box Cards">
+                    {% for category in featured_categories %}
+                        <div class="Slider-item">
+                            <a class="Card Card_main" href="{{ category.get_absolute_url }}">
+                                <div class="Card-content">
+                                    <strong class="Card-title">{{ category.name }}</strong>
+                                    <div class="Card-description">
+                                        {% if category.active_menu_children %}
+                                            Подкатегории:
+                                            {% for child in category.active_menu_children %}
+                                                {{ child.name }}{% if not forloop.last %}, {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            Избранная категория магазина.
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {% empty %}
+                        <div class="Card Card_main">
+                            <div class="Card-content">
+                                <strong class="Card-title">Избранные категории пока не настроены</strong>
+                                <div class="Card-description">Отметьте категории флагом «Избранная на главной» в админке.</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="Section">
+        <div class="wrap">
+            <header class="Section-header">
+                <h2 class="Section-title">Популярные товары</h2>
+                <p>Первые восемь товаров по индексу сортировки и количеству покупок.</p>
+            </header>
+
+            <div class="Cards">
+                {% for product in popular_products %}
+                    <div class="Card">
+                        <a class="Card-picture" href="{% url 'shopapp:product_detail' product.pk %}">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <div style="padding: 24px; text-align: center;">Изображение товара не загружено.</div>
+                            {% endif %}
+                        </a>
+                        <div class="Card-content">
+                            <strong class="Card-title">
+                                <a href="{% url 'shopapp:product_detail' product.pk %}">{{ product.name }}</a>
+                            </strong>
+                            <div class="Card-description">
+                                <p>{{ product.display_description|truncatechars:100 }}</p>
+                                {% if product.category %}
+                                    <p><strong>Категория:</strong> {{ product.category.name }}</p>
+                                {% endif %}
+                                {% if product.manufacturer %}
+                                    <p><strong>Производитель:</strong> {{ product.manufacturer.name }}</p>
+                                {% endif %}
+                                <p><strong>Цена:</strong> ₽{{ product.final_price }}</p>
+                                <p><strong>Покупок:</strong> {{ product.orders_count }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>Товары пока не созданы. Запустите команды заполнения демо-данных.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="Section">
+        <div class="wrap">
+            <header class="Section-header">
+                <h2 class="Section-title">Ограниченный тираж</h2>
+                <p>До 16 товаров с флагом «Ограниченный тираж».</p>
+            </header>
+
+            <div class="Slider Slider_carousel">
+                <div class="Slider-box Cards">
+                    {% for product in limited_edition_products %}
+                        <div class="Slider-item">
+                            <div class="Card">
+                                <a class="Card-picture" href="{% url 'shopapp:product_detail' product.pk %}">
+                                    {% if product.image %}
+                                        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                                    {% else %}
+                                        <div style="padding: 24px; text-align: center;">Изображение товара не загружено.</div>
+                                    {% endif %}
+                                </a>
+                                <div class="Card-content">
+                                    <strong class="Card-title">
+                                        <a href="{% url 'shopapp:product_detail' product.pk %}">{{ product.name }}</a>
+                                    </strong>
+                                    <div class="Card-description">
+                                        <p>{{ product.display_description|truncatechars:90 }}</p>
+                                        <p><strong>Цена:</strong> ₽{{ product.final_price }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="Card Card_main">
+                            <div class="Card-content">
+                                <strong class="Card-title">Товары ограниченного тиража пока не выбраны</strong>
+                                <div class="Card-description">Отметьте товары флагом «Ограниченный тираж» в админке.</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="Section">
+        <div class="wrap">
+            <header class="Section-header">
+                <h2 class="Section-title">Последние заказы</h2>
+            </header>
+            <div class="Orders">
+                {% for order in latest_orders %}
+                    <div class="Order">
+                        <div class="Order-personal">
+                            <div><strong>Заказ №{{ order.pk }}</strong></div>
+                            <div>Пользователь: {{ order.user|default:"не назначен" }}</div>
+                            <div>Статус: {{ order.status }}</div>
+                            <div>Товаров: {{ order.products.count }}</div>
+                            <div>Сумма: ₽{{ order.total_price }}</div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>Заказы пока не созданы.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -3,60 +3,72 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: myfistsite-web
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     env_file:
       - .env
-    command: sh /app/entrypoint.sh
     ports:
-      - "8000:8000"
+      - "${APP_PORT:-8000}:8000"
     volumes:
-      - ./db.sqlite3:/app/db.sqlite3
-      - ./media:/app/media
+      - django_data:/app/data
+      - django_media:/app/media
     restart: always
+    depends_on:
+      - loki
+
+  payment-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sh -c "sleep 10 && python manage.py process_payments --loop --sleep 5"
+    env_file:
+      - .env
+    volumes:
+      - django_data:/app/data
+      - django_media:/app/media
+    restart: always
+    depends_on:
+      - web
+      - loki
 
   loki:
     image: grafana/loki:3.7.0
-    container_name: myfistsite-loki
     command: -config.file=/etc/loki/loki-config.yaml
     ports:
-      - "3100:3100"
+      - "${LOKI_PORT:-3100}:3100"
     volumes:
       - ./infra/loki/loki-config.yaml:/etc/loki/loki-config.yaml:ro
       - loki_data:/loki
     restart: always
-    profiles:
-      - monitoring
 
   promtail:
     image: grafana/promtail:3.7.0
-    container_name: myfistsite-promtail
-    command: -config.file=/etc/promtail/promtail-config.yml
+    command: -config.file=/etc/promtail/promtail-config.yaml
     volumes:
-      - ./infra/promtail/promtail-config.yml:/etc/promtail/promtail-config.yml:ro
+      - ./infra/promtail/promtail-config.yaml:/etc/promtail/promtail-config.yaml:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: always
     depends_on:
       - loki
-    restart: always
-    profiles:
-      - monitoring
 
   grafana:
     image: grafana/grafana:12.4.0
-    container_name: myfistsite-grafana
+    env_file:
+      - .env
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
     ports:
-      - "3000:3000"
+      - "${GRAFANA_PORT:-3000}:3000"
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infra/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+    restart: always
     depends_on:
       - loki
-    restart: always
-    profiles:
-      - monitoring
 
 volumes:
+  django_data:
+  django_media:
   loki_data:
   grafana_data:

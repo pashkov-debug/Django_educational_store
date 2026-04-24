@@ -1,0 +1,40 @@
+{% extends "shopapp/storefront/base.html" %}
+
+{% block title %}Удаление заказа{% endblock %}
+
+{% block content %}
+<div class="Middle Middle_top">
+    <div class="Middle-top">
+        <div class="wrap">
+            <div class="Middle-header">
+                <h1 class="Middle-title">Удаление заказа</h1>
+                <ul class="breadcrumbs Middle-breadcrumbs">
+                    <li class="breadcrumbs-item"><a href="{% url 'shopapp:index' %}">Главная</a></li>
+                    <li class="breadcrumbs-item"><a href="{% url 'shopapp:orders_list' %}">Заказы</a></li>
+                    <li class="breadcrumbs-item"><a href="{% url 'shopapp:order_detail' order.pk %}">Заказ №{{ order.pk }}</a></li>
+                    <li class="breadcrumbs-item breadcrumbs-item_current"><span>Удалить</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="Section">
+        <div class="wrap">
+            <div class="Card Card_main">
+                <div class="Card-content">
+                    <strong class="Card-title">Удалить заказ №{{ order.pk }}?</strong>
+                    <div class="Card-description">
+                        <p>Удаление выполняется полностью, запись будет удалена из базы данных после подтверждения.</p>
+                    </div>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="buttons">
+                            <button class="btn btn_primary" type="submit">Да, удалить</button>
+                            <a class="btn btn_default" href="{% url 'shopapp:order_detail' order.pk %}">Отмена</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

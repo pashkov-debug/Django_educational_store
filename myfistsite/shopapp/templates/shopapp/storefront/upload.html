@@ -1,0 +1,50 @@
+{% extends "shopapp/storefront/base.html" %}
+
+{% block title %}Загрузка файла{% endblock %}
+
+{% block content %}
+<div class="Middle Middle_top">
+    <div class="Middle-top">
+        <div class="wrap">
+            <div class="Middle-header">
+                <h1 class="Middle-title">Загрузка файла</h1>
+                <ul class="breadcrumbs Middle-breadcrumbs">
+                    <li class="breadcrumbs-item"><a href="{% url 'shopapp:index' %}">Главная</a></li>
+                    <li class="breadcrumbs-item breadcrumbs-item_current"><span>Загрузка файла</span></li>
+                </ul>
+                <p>Пока не понятно зачем эта страница, может подгружать изображения в БД.</p>
+            </div>
+        </div>
+    </div>
+    <div class="Section">
+        <div class="wrap">
+            <div class="Order-block Order-block_OPEN">
+                <header class="Section-header Section-header_sm">
+                    <h2 class="Section-title">Форма загрузки</h2>
+                </header>
+                <form method="post" enctype="multipart/form-data" class="form">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label class="form-label" for="file">Файл</label>
+                        <input class="form-input" type="file" name="file" id="file">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn_primary" type="submit">Загрузить</button>
+                    </div>
+                </form>
+
+                <p>Максимальный размер файла: {{ max_upload_size_mb }} МБ.</p>
+
+                {% if error %}
+                    <div class="form-group"><strong>{{ error }}</strong></div>
+                {% endif %}
+
+                {% if success %}
+                    <div class="form-group"><strong>{{ success }}</strong></div>
+                    <p>Файл: <a href="{{ file_url }}">{{ file_name }}</a></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

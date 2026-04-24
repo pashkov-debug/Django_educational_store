@@ -295,3 +295,159 @@ msgid "There is %(images_count)s image available for this product."
 msgid_plural "There are %(images_count)s images available for this product."
 msgstr[0] "There is %(images_count)s image available for this product."
 msgstr[1] "There are %(images_count)s images available for this product."
+
+msgid "Учебный интернет-магазин"
+msgstr "Educational online store"
+
+msgid "Интернет-магазин"
+msgstr "Online store"
+
+msgid "Корзина"
+msgstr "Cart"
+
+msgid "Поиск по товарам"
+msgstr "Search products"
+
+msgid "Интернет-магазин · storefront"
+msgstr "Online store · storefront"
+
+msgid "Язык"
+msgstr "Language"
+
+msgid "Найти"
+msgstr "Search"
+
+msgid "Каталог"
+msgstr "Catalog"
+
+msgid "Скидки"
+msgstr "Discounts"
+
+msgid "О магазине"
+msgstr "About"
+
+msgid "Профиль"
+msgstr "Profile"
+
+msgid "Добавить товар"
+msgstr "Add product"
+
+msgid "Категории"
+msgstr "Categories"
+
+msgid "Разделы магазина"
+msgstr "Store sections"
+
+msgid "Вход в аккаунт"
+msgstr "Log in to account"
+
+msgid "Авторизация выполняется через стандартные Django views в маршруте /accounts/."
+msgstr "Authentication is handled by standard Django views under /accounts/."
+
+msgid "Создать аккаунт"
+msgstr "Create account"
+
+msgid "Уже есть аккаунт"
+msgstr "Already have an account"
+
+msgid "После регистрации автоматически создаётся профиль пользователя."
+msgstr "A user profile is created automatically after registration."
+
+msgid "Доставка и возврат"
+msgstr "Delivery and returns"
+
+msgid "Доставляем заказы и сохраняем историю покупок в личном кабинете."
+msgstr "We deliver orders and keep purchase history in the user account."
+
+msgid "Безопасная оплата"
+msgstr "Secure payment"
+
+msgid "Платежи проходят через очередь и отображаются на странице статуса оплаты."
+msgstr "Payments go through a queue and are shown on the payment status page."
+
+msgid "Поддержка"
+msgstr "Support"
+
+msgid "Статусы заказов, платежей и состав заказа доступны пользователю после оформления."
+msgstr "Order status, payment status and order contents are available after checkout."
+
+msgid "Контроль качества"
+msgstr "Quality control"
+
+msgid "Товары проходят через каталог, корзину, оформление заказа и историю покупок."
+msgstr "Products go through catalog, cart, checkout and purchase history flows."
+
+msgid "Почему выбирают наш магазин"
+msgstr "Why choose our store"
+
+msgid "Это учебный интернет-магазин на Django. В нём реализованы каталог товаров, категории, производители, корзина, оформление заказа, очередь платежей, история заказов и личный кабинет."
+msgstr "This is an educational Django online store. It includes a product catalog, categories, manufacturers, cart, checkout, payment queue, order history and user account."
+
+msgid "Проект подготовлен для запуска локально, через Docker Compose и на виртуальной машине. Для наблюдаемости подключены Loki, Promtail и Grafana."
+msgstr "The project is prepared for local launch, Docker Compose and deployment on a virtual machine. Loki, Promtail and Grafana are connected for observability."
+
+msgid "Перевод товарного контента не входит в текущие требования и оставлен как точка расширения."
+msgstr "Product content translation is outside the current requirements and is left as an extension point."
+
+msgid "Перейти в каталог"
+msgstr "Go to catalog"
+
+msgid "Посмотреть скидки"
+msgstr "View discounts"
+
+msgid "Что уже работает"
+msgstr "What already works"
+
+msgid "Каталог с фильтрами и сортировкой."
+msgstr "Catalog with filters and sorting."
+
+msgid "Корзина для гостя и авторизованного пользователя."
+msgstr "Cart for guests and authenticated users."
+
+msgid "Пошаговое оформление заказа."
+msgstr "Step-by-step checkout."
+
+msgid "Фоновая обработка платежей."
+msgstr "Background payment processing."
+
+msgid "Личный кабинет и история заказов."
+msgstr "User account and order history."
+
+msgid "Как устроен заказ"
+msgstr "How ordering works"
+
+msgid "Пользователь добавляет товары в корзину, проходит шаги оформления, выбирает доставку и оплату. После подтверждения создаются заказ и позиции заказа, а платёж попадает в очередь обработки."
+msgstr "The user adds products to the cart, completes checkout steps, chooses delivery and payment. After confirmation, an order and order items are created, and the payment goes to the processing queue."
+
+msgid "Результат оплаты можно проверить на странице статуса. Если платёж завершился ошибкой, оплату можно повторить из истории заказов или со страницы заказа."
+msgstr "The payment result can be checked on the status page. If payment fails, it can be retried from order history or from the order page."
+
+msgid "Товары с активной скидкой из каталога."
+msgstr "Products with active discounts from the catalog."
+
+msgid "Категория"
+msgstr "Category"
+
+msgid "Производитель"
+msgstr "Manufacturer"
+
+msgid "Открыть"
+msgstr "Open"
+
+msgid "Купить"
+msgstr "Buy"
+
+msgid "Скидок пока нет"
+msgstr "There are no discounts yet"
+
+msgid "Сейчас в каталоге нет товаров с активной скидкой."
+msgstr "There are no discounted products in the catalog yet."
+
+msgid "Назад"
+msgstr "Back"
+
+msgid "Вперёд"
+msgstr "Next"
+
+msgid "Страница %(current_page)s из %(total_pages)s"
+msgstr "Page %(current_page)s of %(total_pages)s"

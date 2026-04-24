@@ -1,0 +1,183 @@
+{% extends "shopapp/storefront/base.html" %}
+
+{% block title %}Заказ №{{ order.pk }}{% endblock %}
+
+{% block content %}
+<div class="Middle Middle_top">
+    <div class="Middle-top">
+        <div class="wrap">
+            <div class="Middle-header">
+                <h1 class="Middle-title">Заказ №{{ order.pk }}</h1>
+                <ul class="breadcrumbs Middle-breadcrumbs">
+                    <li class="breadcrumbs-item"><a href="{% url 'shopapp:index' %}">Главная</a></li>
+                    <li class="breadcrumbs-item"><a href="{% url 'shopapp:layout_history_order' %}">История заказов</a></li>
+                    <li class="breadcrumbs-item breadcrumbs-item_current"><span>Заказ №{{ order.pk }}</span></li>
+                </ul>
+
+                <div class="buttons">
+                    <a class="btn btn_default" href="{% url 'shopapp:layout_history_order' %}">К истории заказов</a>
+
+                    {% if order.payment_status != "paid" %}
+                        <form action="{% url 'shopapp:payment_retry' order.pk %}" method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <button class="btn btn_primary" type="submit">Оплатить</button>
+                        </form>
+                    {% endif %}
+
+                    {% if request.user.is_staff or perms.shopapp.change_order %}
+                        <a class="btn btn_default" href="{% url 'shopapp:order_update' order.pk %}">Редактировать</a>
+                    {% endif %}
+
+                    {% if request.user.is_staff or perms.shopapp.delete_order %}
+                        <a class="btn btn_default" href="{% url 'shopapp:order_delete' order.pk %}">Удалить</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="Section">
+        <div class="wrap">
+            <div class="Order">
+                <div class="Order-block Order-block_OPEN">
+                    <header class="Section-header Section-header_sm">
+                        <h2 class="Section-title">Информация о заказе</h2>
+                    </header>
+
+                    <div class="row">
+                        <div class="row-block">
+                            <div class="Order-info">
+                                <div class="Order-infoType">Дата заказа:</div>
+                                <div class="Order-infoContent">{{ order.created_at|date:"d.m.Y H:i" }}</div>
+                            </div>
+
+                            <div class="Order-info">
+                                <div class="Order-infoType">Ф. И. О.:</div>
+                                <div class="Order-infoContent">{{ order.full_name|default:"не указано" }}</div>
+                            </div>
+
+                            <div class="Order-info">
+                                <div class="Order-infoType">Телефон:</div>
+                                <div class="Order-infoContent">{{ order.phone|default:"не указан" }}</div>
+                            </div>
+
+                            <div class="Order-info">
+                                <div class="Order-infoType">Email:</div>
+                                <div class="Order-infoContent">{{ order.email|default:"не указан" }}</div>
+                            </div>
+
+                            <div class="Order-info">
+                                <div class="Order-infoType">Промокод:</div>
+                                <div class="Order-infoContent">{{ order.promo_code|default:"не указан" }}</div>
+                            </div>
+                        </div>
+
+                        <div class="row-block">
+                            <div class="Order-info Order-info_delivery">
+                                <div class="Order-infoType">Тип доставки:</div>
+                                <div class="Order-infoContent">{{ order.delivery_type_label }}</div>
+                            </div>
+
+                            <div class="Order-info">
+                                <div class="Order-infoType">Город:</div>
+                                <div class="Order-infoContent">{{ order.city|default:"не указан" }}</div>
+                            </div>
+
+                            <div class="Order-info">
+                                <div class="Order-infoType">Адрес:</div>
+                                <div class="Order-infoContent">{{ order.address|default:order.delivery_address }}</div>
+                            </div>
+
+                            <div class="Order-info Order-info_pay">
+                                <div class="Order-infoType">Оплата:</div>
+                                <div class="Order-infoContent">{{ order.payment_type_label }}</div>
+                            </div>
+
+                            <div class="Order-info Order-info_status">
+                                <div class="Order-infoType">Статус заказа:</div>
+                                <div class="Order-infoContent">{{ order.status }}</div>
+                            </div>
+
+                            <div class="Order-info Order-info_status">
+                                <div class="Order-infoType">Статус оплаты:</div>
+                                <div class="Order-infoContent">{{ order.payment_status_label }}</div>
+                            </div>
+
+                            {% if order.payment_error %}
+                                <div class="Order-info Order-info_status">
+                                    <div class="Order-infoType">Ошибка оплаты:</div>
+                                    <div class="Order-infoContent" style="color: #c00;">{{ order.payment_error }}</div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="Order-block Order-block_OPEN">
+                    <header class="Section-header Section-header_sm">
+                        <h2 class="Section-title">Состав заказа</h2>
+                    </header>
+
+                    <div class="Cart">
+                        {% for item in order_items %}
+                            <div class="Cart-product">
+                                <div class="Cart-block Cart-block_row">
+                                    <div class="Cart-block Cart-block_pict">
+                                        <a class="Cart-pict" href="{% url 'shopapp:product_detail' item.product.pk %}">
+                                            {% if item.product.image %}
+                                                <img class="Cart-img" src="{{ item.product.image.url }}" alt="{{ item.product_name_snapshot }}">
+                                            {% else %}
+                                                <div style="padding: 18px; text-align: center;">Нет изображения</div>
+                                            {% endif %}
+                                        </a>
+                                    </div>
+
+                                    <div class="Cart-block Cart-block_info">
+                                        <a class="Cart-title" href="{% url 'shopapp:product_detail' item.product.pk %}">
+                                            {{ item.product_name_snapshot }}
+                                        </a>
+                                        <div class="Cart-desc">
+                                            Количество: {{ item.quantity }}
+                                        </div>
+                                        <div class="Cart-desc">
+                                            Цена за единицу: ₽{{ item.unit_price }}
+                                        </div>
+                                    </div>
+
+                                    <div class="Cart-block Cart-block_summ">
+                                        <strong>Сумма:</strong>
+                                        <span class="Cart-price">₽{{ item.total_price }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            {% for product in products %}
+                                <div class="Cart-product">
+                                    <div class="Cart-block Cart-block_row">
+                                        <div class="Cart-block Cart-block_info">
+                                            <a class="Cart-title" href="{% url 'shopapp:product_detail' product.pk %}">
+                                                {{ product.name }}
+                                            </a>
+                                        </div>
+                                        <div class="Cart-block Cart-block_summ">
+                                            <span class="Cart-price">₽{{ product.final_price }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <p>В заказе пока нет товаров.</p>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="Cart-total" style="margin-top: 24px;">
+                    <div><strong>Количество товаров:</strong> {{ products_count }}</div>
+                    <div><strong>Стоимость доставки:</strong> ₽{{ order.delivery_price }}</div>
+                    <div><strong>Итоговая сумма:</strong> ₽{{ total_price }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

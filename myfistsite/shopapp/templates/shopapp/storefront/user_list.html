@@ -1,0 +1,66 @@
+{% extends "shopapp/storefront/base.html" %}
+
+{% block title %}Пользователи{% endblock %}
+
+{% block content %}
+<div class="Middle Middle_top">
+    <div class="Middle-top">
+        <div class="wrap">
+            <div class="Middle-header">
+                <h1 class="Middle-title">Пользователи</h1>
+                <ul class="breadcrumbs Middle-breadcrumbs">
+                    <li class="breadcrumbs-item"><a href="{% url 'shopapp:index' %}">Главная</a></li>
+                    <li class="breadcrumbs-item breadcrumbs-item_current"><span>Пользователи</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="Section">
+        <div class="wrap">
+            <div class="Section-content">
+                {% if user_cards %}
+                    <div style="display: grid; gap: 20px;">
+                        {% for item in user_cards %}
+                            <div class="Card Card_main">
+                                <div class="Card-content">
+                                    <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+                                        <div>
+                                            {% if item.profile.avatar %}
+                                                <img
+                                                    src="{{ item.profile.avatar.url }}"
+                                                    alt="Аватар {{ item.user.username }}"
+                                                    style="max-width: 120px; border-radius: 12px;"
+                                                >
+                                            {% else %}
+                                                <p>Аватарка отсутствует.</p>
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <strong class="Card-title">{{ item.user.username }}</strong>
+                                            <p><strong>Ф. И. О.:</strong> {{ item.profile.full_name|default:"не заполнено" }}</p>
+                                            <p><strong>Email:</strong> {{ item.user.email|default:"не заполнен" }}</p>
+                                            <div class="buttons" style="margin-top: 12px; display: flex; gap: 12px; flex-wrap: wrap;">
+                                                <a class="btn btn_primary" href="{% url 'accounts:user_detail' item.user.pk %}">Открыть профиль</a>
+                                                {% if item.can_edit_profile %}
+                                                    <a class="btn btn_default" href="{% url 'accounts:user_profile_update' item.user.pk %}">Редактировать</a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="Card Card_main">
+                        <div class="Card-content">
+                            <p>Пользователи не найдены.</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

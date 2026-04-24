@@ -1,0 +1,135 @@
+{% extends "shopapp/storefront/base.html" %}
+
+{% block title %}Оформление заказа — доставка{% endblock %}
+
+{% block content %}
+<div class="Middle Middle_top">
+    <div class="Middle-top">
+        <div class="wrap">
+            <div class="Middle-header">
+                <h1 class="Middle-title">Оформление заказа</h1>
+                <ul class="breadcrumbs Middle-breadcrumbs">
+                    <li class="breadcrumbs-item">
+                        <a href="{% url 'shopapp:index' %}">Главная</a>
+                    </li>
+                    <li class="breadcrumbs-item">
+                        <a href="{% url 'shopapp:checkout_customer' %}">Данные покупателя</a>
+                    </li>
+                    <li class="breadcrumbs-item breadcrumbs-item_current">
+                        <span>Доставка</span>
+                    </li>
+                </ul>
+                <p>Шаг {{ checkout_step }} из 4 — способ доставки.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="Section">
+        <div class="wrap">
+            {% if form.errors %}
+                <div style="margin-bottom: 24px; padding: 16px 20px; border: 1px solid #d66; background: #fff6f6;">
+                    <strong>Проверьте данные доставки:</strong>
+                    <ul style="margin-top: 10px;">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li>{{ field.label }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <form method="post" novalidate style="display: block;">
+                {% csrf_token %}
+
+                {% with selected_delivery=form.delivery_type.value|default:"regular" %}
+                    <div style="display: grid; grid-template-columns: minmax(260px, 620px); gap: 22px; margin-bottom: 32px;">
+                        <div>
+                            <div style="display: block; margin-bottom: 12px; font-weight: 700;">
+                                Способ доставки
+                            </div>
+
+                            <label style="display: flex; gap: 10px; align-items: flex-start; margin-bottom: 14px;">
+                                <input
+                                    type="radio"
+                                    name="delivery_type"
+                                    value="regular"
+                                    {% if selected_delivery == "regular" %}checked{% endif %}
+                                    required
+                                >
+                                <span>
+                                    <strong>Доставка</strong><br>
+                                    Обычная доставка: ₽{{ shop_settings.regular_delivery_price }}.
+                                    Бесплатно при сумме от ₽{{ shop_settings.free_delivery_threshold }}.
+                                </span>
+                            </label>
+
+                            <label style="display: flex; gap: 10px; align-items: flex-start; margin-bottom: 14px;">
+                                <input
+                                    type="radio"
+                                    name="delivery_type"
+                                    value="express"
+                                    {% if selected_delivery == "express" %}checked{% endif %}
+                                    required
+                                >
+                                <span>
+                                    <strong>Экспресс-доставка</strong><br>
+                                    Стоимость: ₽{{ shop_settings.express_delivery_price }}.
+                                </span>
+                            </label>
+                        </div>
+
+                        <div>
+                            <label for="id_city" style="display: block; margin-bottom: 8px; font-weight: 700;">
+                                Город
+                            </label>
+                            <input
+                                id="id_city"
+                                type="text"
+                                name="city"
+                                value="{{ form.city.value|default_if_none:'' }}"
+                                placeholder="Москва"
+                                required
+                                style="display: block; width: 100%; height: 44px; padding: 8px 12px; border: 1px solid #999; background: #fff; color: #222;"
+                            >
+                        </div>
+
+                        <div>
+                            <label for="id_address" style="display: block; margin-bottom: 8px; font-weight: 700;">
+                                Адрес
+                            </label>
+                            <input
+                                id="id_address"
+                                type="text"
+                                name="address"
+                                value="{{ form.address.value|default_if_none:'' }}"
+                                placeholder="ул. Тестовая, дом 1"
+                                required
+                                style="display: block; width: 100%; height: 44px; padding: 8px 12px; border: 1px solid #999; background: #fff; color: #222;"
+                            >
+                        </div>
+                    </div>
+                {% endwith %}
+
+                <div class="Cart-total" style="margin-top: 32px;">
+                    <div>
+                        <strong>Сумма товаров:</strong> ₽{{ cart_items_price }}
+                    </div>
+                </div>
+
+                <div class="buttons" style="margin-top: 24px;">
+                    <a class="btn btn_default" href="{% url 'shopapp:checkout_customer' %}">
+                        Назад
+                    </a>
+                    <button class="btn btn_primary" type="submit">
+                        Дальше
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

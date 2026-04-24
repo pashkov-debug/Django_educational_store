@@ -1,0 +1,124 @@
+{% extends "shopapp/storefront/base.html" %}
+
+{% block title %}Корзина{% endblock %}
+
+{% block content %}
+<div class="Middle Middle_top">
+    <div class="Middle-top">
+        <div class="wrap">
+            <div class="Middle-header">
+                <h1 class="Middle-title">Корзина</h1>
+                <ul class="breadcrumbs Middle-breadcrumbs">
+                    <li class="breadcrumbs-item">
+                        <a href="{% url 'shopapp:index' %}">Главная</a>
+                    </li>
+                    <li class="breadcrumbs-item breadcrumbs-item_current">
+                        <span>Корзина</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="Section">
+        <div class="wrap">
+            {% if cart_items %}
+                <div class="Cart">
+                    {% for item in cart_items %}
+                        <div class="Cart-product">
+                            <div class="Cart-block Cart-block_row">
+                                <div class="Cart-block Cart-block_pict">
+                                    <a class="Cart-pict" href="{% url 'shopapp:product_detail' item.product.pk %}">
+                                        {% if item.product.image %}
+                                            <img class="Cart-img" src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                                        {% else %}
+                                            <div style="padding: 18px; text-align: center;">Нет изображения</div>
+                                        {% endif %}
+                                    </a>
+                                </div>
+
+                                <div class="Cart-block Cart-block_info">
+                                    <a class="Cart-title" href="{% url 'shopapp:product_detail' item.product.pk %}">
+                                        {{ item.product.name }}
+                                    </a>
+
+                                    <div class="Cart-desc">
+                                        {{ item.product.display_description|truncatechars:160 }}
+                                    </div>
+
+                                    {% if item.product.category %}
+                                        <div class="Cart-desc">Категория: {{ item.product.category.name }}</div>
+                                    {% endif %}
+
+                                    {% if item.product.manufacturer %}
+                                        <div class="Cart-desc">Производитель: {{ item.product.manufacturer.name }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="Cart-block Cart-block_price">
+                                    <div class="Cart-price">₽{{ item.price_snapshot }}</div>
+                                </div>
+                            </div>
+
+                            <div class="Cart-block Cart-block_row">
+                                <div class="Cart-block Cart-block_amount">
+                                    <form action="{% url 'shopapp:cart_item_update' item.pk %}" method="post" style="display: inline-flex; gap: 8px; align-items: center;">
+                                        {% csrf_token %}
+                                        <label for="cart-item-{{ item.pk }}">Количество</label>
+                                        <input id="cart-item-{{ item.pk }}"
+                                               class="form-input"
+                                               type="number"
+                                               name="quantity"
+                                               value="{{ item.quantity }}"
+                                               min="0"
+                                               style="width: 90px;">
+                                        <button class="btn btn_default" type="submit">Обновить</button>
+                                    </form>
+                                </div>
+
+                                <div class="Cart-block Cart-block_delete">
+                                    <form action="{% url 'shopapp:cart_item_delete' item.pk %}" method="post">
+                                        {% csrf_token %}
+                                        <button class="btn btn_default" type="submit">Удалить</button>
+                                    </form>
+                                </div>
+
+                                <div class="Cart-block Cart-block_summ">
+                                    <strong>Сумма:</strong>
+                                    <span class="Cart-price">₽{{ item.total_price }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    <div class="Cart-total">
+                        <div class="Cart-block Cart-block_total">
+                            <strong>Всего товаров:</strong> {{ cart_total_quantity }}
+                        </div>
+                        <div class="Cart-block Cart-block_total">
+                            <strong>Итого:</strong>
+                            <span class="Cart-price">₽{{ cart_total_price }}</span>
+                        </div>
+                        <div class="Cart-block Cart-block_total">
+                            <a class="btn btn_default" href="{% url 'shopapp:products_list' %}">Продолжить покупки</a>
+                            <a class="btn btn_primary" href="{% url 'shopapp:checkout_customer' %}">Оформить заказ</a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="Card Card_main">
+                    <div class="Card-content">
+                        <strong class="Card-title">Корзина пуста</strong>
+                        <div class="Card-description">
+                            Добавьте товары из каталога, чтобы перейти к оформлению заказа.
+                        </div>
+                        <div class="buttons" style="margin-top: 18px;">
+                            <a class="btn btn_primary" href="{% url 'shopapp:products_list' %}">Перейти в каталог</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

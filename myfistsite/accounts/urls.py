@@ -1,18 +1,26 @@
+from django.urls import path
 
-from django.contrib.auth.views import LogoutView
-from django.urls import path, reverse_lazy
-from django.views.generic import RedirectView
+from .views import (
+    AboutMeView,
+    AccountDashboardView,
+    ProfileUpdateView,
+    StoreLoginView,
+    StoreLogoutView,
+    StoreRegisterView,
+    UserDetailView,
+    UserListView,
+)
 
 app_name = "accounts"
 
 urlpatterns = [
-    path("login/", RedirectView.as_view(pattern_name="shopapp:sign_in", permanent=False), name="login"),
-    path("logout/", LogoutView.as_view(next_page=reverse_lazy("shopapp:index")), name="logout"),
-    path("register/", RedirectView.as_view(pattern_name="shopapp:sign_up", permanent=False), name="register"),
-    path("account/", RedirectView.as_view(pattern_name="shopapp:account", permanent=False), name="account"),
-    path("about-me/", RedirectView.as_view(pattern_name="shopapp:profile", permanent=False), name="about_me"),
-    path("profile/", RedirectView.as_view(pattern_name="shopapp:profile", permanent=False), name="profile"),
-    path("users/", RedirectView.as_view(url="/admin/auth/user/", permanent=False), name="users_list"),
-    path("users/<int:pk>/", RedirectView.as_view(url="/admin/auth/user/", permanent=False), name="user_detail"),
-    path("users/<int:user_pk>/edit/", RedirectView.as_view(pattern_name="shopapp:profile", permanent=False), name="user_profile_update"),
+    path("login/", StoreLoginView.as_view(), name="login"),
+    path("logout/", StoreLogoutView.as_view(), name="logout"),
+    path("register/", StoreRegisterView.as_view(), name="register"),
+    path("account/", AccountDashboardView.as_view(), name="account"),
+    path("about-me/", AboutMeView.as_view(), name="about_me"),
+    path("profile/", ProfileUpdateView.as_view(), name="profile"),
+    path("users/", UserListView.as_view(), name="users_list"),
+    path("users/<int:pk>/", UserDetailView.as_view(), name="user_detail"),
+    path("users/<int:user_pk>/edit/", ProfileUpdateView.as_view(), name="user_profile_update"),
 ]
